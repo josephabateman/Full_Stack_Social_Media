@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5001;
 //Start server listening
 app.listen(PORT, () => console.log(`server started on ${PORT}`))
 
-//replace all below names in env variables
+//replace all below names with env variables
 const databaseName = "postgres"
 const pool = new Pool({
     user: "postgres",
@@ -68,24 +68,21 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     try {
         async function login() {
-            const clientEmail = req.body.email
-            const clientPassword = req.body.password
 
-            const databaseQuery = await pool.query(`SELECT * FROM users WHERE email = '${clientEmail}'`)
+            const databaseQuery = await pool.query(`SELECT * FROM users WHERE email = '${req.body.email}'`)
             const databaseEmail = databaseQuery.rows[0].email
             const databasePassword = databaseQuery.rows[0].password
 
-            bcrypt.compare(clientPassword, databasePassword).then(function (result) {
+            bcrypt.compare(req.body.password, databasePassword).then(function (passesValidation) {
                 // console.log(result)
-                if (result) {
-                    const accessToken = jwt.sign({
-                        userId: databaseEmail,
-                        userPassword: databasePassword
-                    }, process.env.ACCESS_TOKEN_SECRET, {
-                        expiresIn: '18h'
-                    });
+                if (passesValidation) {
+                    const accessToken = jwt.sign(
+                        { userId: databaseEmail },
+                        'process.env.ACCESS_TOKEN_SECRET',
+                        { expiresIn: '24h' });
                     res.status(200).json({
-                        token: accessToken
+                        token: accessToken,
+                        userId: req.body.email
                     })
                 } else {
                     res.status(403).json('Password incorrect')
@@ -99,7 +96,7 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.get('/', authenticateToken, (req, res) => {
+app.get('/', (req, res) => {
     try {
         async function displayPosts() {
             const databaseQuery = await pool.query("SELECT * FROM posts");
@@ -111,11 +108,11 @@ app.get('/', authenticateToken, (req, res) => {
     }
 });
 
-app.post('/posts', authenticateToken, (req, res) => {
+app.post('/posts', (req, res) => {
     async function storePostInDatabase() {
         try {
             const caption = req.body.caption
-            const databaseQuery = await pool.query(`INSERT INTO posts (caption) VALUES ('${caption}') RETURNING id;`)
+            const databaseQuery = await pool.query(`INSERT INTO posts (caption, user_email) VALUES ('${caption}', '${req.body.userId}') RETURNING id;`)
             const postId = databaseQuery.rows[0].id
             res.json({
                 postId: postId,
@@ -131,10 +128,7 @@ app.post('/posts', authenticateToken, (req, res) => {
 app.put('/posts', authenticateToken, (req, res) => {
     async function modifyPost() {
         try {
-            const postId = req.body.postId
-            console.log(postId)
-            const databaseQuery = await pool.query(`UPDATE posts SET caption = '${req.body.caption}', comments = '${req.body.comment}' WHERE id = ${req.body.postId};`)
-            // UPDATE posts SET caption = 'hi', comments = 'k' WHERE id = 89
+            await pool.query(`UPDATE posts SET caption = '${req.body.caption}', comments = '${req.body.comment}' WHERE id = ${req.body.postId};`)
             res.json({
                 status: 'post modified sucessfully'
             })
@@ -149,8 +143,7 @@ app.delete('/posts', authenticateToken, (req, res) => {
     async function deletePost() {
         try {
             const postId = req.body.postId
-            console.log(postId)
-            const databaseQuery = await pool.query(`DELETE FROM posts WHERE id = ${postId};`)
+            await pool.query(`DELETE FROM posts WHERE id = ${postId};`)
             res.json({
                 status: 'post deleted sucessfully'
             })
@@ -161,16 +154,25 @@ app.delete('/posts', authenticateToken, (req, res) => {
     deletePost()
 })
 
-function authenticateToken(req, res, next) {
-    const authToken = req.headers.authorization.split(' ')[1];
-    jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET, (err, decodedToken) => {
-        if (err) {
-            res.status(403).json('user authentication failed')
-        } else {
-            next();
-        }
-        // req.user = decodedToken
-        // console.log(decodedToken.userId)
+async function authenticateToken(req, res, next) {
+    try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, 'process.env.ACCESS_TOKEN_SECRET');
+        const decodedTokenUserId = decodedToken.userId;
+        console.log(`decoded token: ${decodedTokenUserId}`)
 
-    })
+        const databaseQuery = await pool.query(`select user_email from posts WHERE id = '${req.body.postId}'`);
+        const databaseUser_email = databaseQuery.rows[0].user_email
+        console.log(`database email: ${databaseUser_email}`)
+        
+        if (databaseUser_email === decodedTokenUserId) {
+            next();
+        } else {
+            throw 'Invalid user ID';
+        }
+    } catch {
+        res.status(401).json({
+            error: new Error('Invalid request!')
+        });
+    } 
 }
