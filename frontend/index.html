@@ -1,27 +1,157 @@
-<!doctype html>
-
-<html lang="en">
+<!DOCTYPE html>
+<html>
 
 <head>
-  <meta charset="utf-8">
-
   <title>Full Stack</title>
   <meta name="My final project" content="full stack - project 7">
   <meta name="Joe Bateman" content="">
 
-  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
-
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <style>
+    /* can add a v-cloak here if necessary */
+  </style>
 </head>
 
 <body>
-  <button id="create-post">Create Post</button>
-  <button id="logout">logout</button>
-  <button id="test">test</button>
 
+  <div id="app">
+    <div class="container">
 
-  <div id="posts"></div>
+      <button v-on:click="createPost" id="create-post">Create Post</button>
+      <button v-on:click="logout" id="logout">logout</button>
 
+      <div v-for="post in posts" :id="post.id" class="card mt-5">
+
+        <h2>{{ post.caption }}</h2>
+        <h4>{{ post.comments }}</h4>
+        <button v-on:click="deletePost" class="delete col-3">Delete</button>
+        <button v-on:click="modifyPost" class="modify col-3">Modify</button>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
   <script src="js/index.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        posts: [],
+        createPostResponse: []
+      },
+      /* Below is an example of a vue instance lifecycle - see documentation
+      this is essential to work */
+      created: function () {
+        this.fetchPosts()
+      },
+      // created: function () {
+      //   this.modifyPosts()
+      // },
+      methods: {
+        logout: function () {
+          sessionStorage.removeItem('jwt');
+          location.href = "/login.html"
+        },
+        fetchPosts: async function () {
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          const options = {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          };
+          const response = await fetch('http://localhost:5001', options)
+          const jsonData = await response.json()
+          vm.posts = jsonData
+        },
+        createPost: async function () {
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          const userId = JSON.parse(sessionStorage.getItem('userId'))
+
+          const caption = prompt('write a caption')
+          console.log(caption)
+
+          const data = {
+            userId,
+            caption
+          }
+          console.log(data)
+          const options = {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+          };
+          const response = await fetch('http://localhost:5001/posts', options);
+          const jsonResponse = await response.json();
+          console.log(jsonResponse.status)
+          vm.createPostResponse = jsonResponse
+          location.reload()
+        },
+        deletePost: async function () {
+          console.log(event.target.className)
+          const postId = event.target.parentNode.id;
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          // const userId = JSON.parse(sessionStorage.getItem('userId'))
+
+          const data = {
+            // userId,
+            postId
+          }
+          console.log(data)
+          const options = {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+          };
+          const response = await fetch('http://localhost:5001/posts', options)
+          const jsonData = await response.json()
+          console.log(jsonData)
+          location.reload()
+        },
+        modifyPost: async function () {
+          console.log(event.target.className)
+          const caption = prompt('Modify the caption')
+          const comment = prompt('Modify the comments')
+          const postId = event.target.parentNode.id;
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          // const userId = JSON.parse(sessionStorage.getItem('userId'))
+
+          const data = {
+            // userId,
+            postId,
+            caption,
+            comment
+          }
+          console.log(data)
+          const options = {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+          };
+          const response = await fetch('http://localhost:5001/posts', options)
+          const jsonData = await response.json()
+          console.log(jsonData)
+          location.reload()
+        }
+      }
+    })
+  </script>
+
 </body>
 
 </html>

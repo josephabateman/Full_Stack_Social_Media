@@ -17,5 +17,6 @@ const addUserToDatabase = async () => {
     const sendData = await fetch('http://localhost:5001/signup', options);
     const responseObject = await sendData.json();
     console.log(responseObject)
+    location.href = '/login.html'
 }
 addUserToDatabase()

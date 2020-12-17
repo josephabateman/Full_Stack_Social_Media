@@ -52,7 +52,7 @@ app.post('/signup', (req, res) => {
                 if (err) {
                     console.log(err)
                 } else {
-                    pool.query(`INSERT INTO users (email, password) VALUES ('${email}', '${hash}');`)
+                    pool.query(`INSERT INTO users (user_email, password) VALUES ('${email}', '${hash}');`)
                 }
             });
             res.json({
@@ -69,17 +69,19 @@ app.post('/login', (req, res) => {
     try {
         async function login() {
 
-            const databaseQuery = await pool.query(`SELECT * FROM users WHERE email = '${req.body.email}'`)
-            const databaseEmail = databaseQuery.rows[0].email
+            const databaseQuery = await pool.query(`SELECT * FROM users WHERE user_email = '${req.body.email}'`)
+            const databaseEmail = databaseQuery.rows[0].user_email
             const databasePassword = databaseQuery.rows[0].password
 
             bcrypt.compare(req.body.password, databasePassword).then(function (passesValidation) {
                 // console.log(result)
                 if (passesValidation) {
-                    const accessToken = jwt.sign(
-                        { userId: databaseEmail },
-                        'process.env.ACCESS_TOKEN_SECRET',
-                        { expiresIn: '24h' });
+                    const accessToken = jwt.sign({
+                            userId: databaseEmail
+                        },
+                        process.env.ACCESS_TOKEN_SECRET, {
+                            expiresIn: '24h'
+                        });
                     res.status(200).json({
                         token: accessToken,
                         userId: req.body.email
@@ -108,7 +110,7 @@ app.get('/', (req, res) => {
     }
 });
 
-app.post('/posts', (req, res) => {
+app.post('/posts', authenticateToken, (req, res) => {
     async function storePostInDatabase() {
         try {
             const caption = req.body.caption
@@ -156,23 +158,30 @@ app.delete('/posts', authenticateToken, (req, res) => {
 
 async function authenticateToken(req, res, next) {
     try {
+        console.log(req.method)
         const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, 'process.env.ACCESS_TOKEN_SECRET');
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const decodedTokenUserId = decodedToken.userId;
         console.log(`decoded token: ${decodedTokenUserId}`)
 
-        const databaseQuery = await pool.query(`select user_email from posts WHERE id = '${req.body.postId}'`);
-        const databaseUser_email = databaseQuery.rows[0].user_email
-        console.log(`database email: ${databaseUser_email}`)
-        
-        if (databaseUser_email === decodedTokenUserId) {
-            next();
+        if (req.method === 'POST' && decodedToken) {
+            next()
         } else {
-            throw 'Invalid user ID';
+            const query = `select user_email from posts WHERE id = '${req.body.postId}'`
+            const databaseQuery = await pool.query(query);
+            const databaseUser_email = databaseQuery.rows[0].user_email
+            console.log(`database email: ${databaseUser_email}`)
+
+            const emailsMatch = databaseUser_email === decodedTokenUserId;
+            if (req.method === 'PUT' && emailsMatch || req.method === 'DELETE' && emailsMatch) {
+                next();
+            } else {
+                throw 'Invalid user ID';
+            }
         }
     } catch {
         res.status(401).json({
             error: new Error('Invalid request!')
         });
-    } 
+    }
 }

@@ -24,8 +24,7 @@ try {
         if (responseObject.token !== undefined) {
             sessionStorage.setItem('jwt', JSON.stringify(responseObject.token))
             sessionStorage.setItem('userId', JSON.stringify(responseObject.userId))
-            // console.log(responseObject.token)
-            // location.href = "/index.html"
+            location.href = '/index.html'
         }
     }
     login()
