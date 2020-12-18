@@ -9,24 +9,54 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <style>
-    /* can add a v-cloak here if necessary */
+    [v-cloak] {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
 
   <div id="app">
-    <div class="container">
+    <div v-cloak class="container">
 
-      <button v-on:click="createPost" id="create-post">Create Post</button>
-      <button v-on:click="logout" id="logout">logout</button>
+      <button v-show="!signupButtonClicked" v-if="!loggedIn" @click="signupButtonClicked = true" class="btn btn-warning">Sign Up</button>
+      
 
-      <div v-for="post in posts" :id="post.id" class="card mt-5">
+      <div v-show="signupButtonClicked" id="sign-up-form" class="form-group">
+        <button @click="signupButtonClicked = false" class="btn btn-warning">Log in</button>
+        <form action="">
+          <label for="email">Email</label>
+          <input type="text" v-model="signupEmail" class="form-control form-control-lg">
+          <label for="password">Password</label>
+          <input type="password" v-model="signupPassword" class="form-control form-control-lg">
 
-        <h2>{{ post.caption }}</h2>
-        <h4>{{ post.comments }}</h4>
-        <button v-on:click="deletePost" class="delete col-3">Delete</button>
-        <button v-on:click="modifyPost" class="modify col-3">Modify</button>
+          <button type="submit" @click.prevent="signup" class="btn btn-primary">Sign up</button>
+        </form>
+      </div>
+
+      <div v-show="!signupButtonClicked" v-if="!loggedIn" id="log-in-form" class="form-group">
+        <form action="">
+          <label for="email">Email</label>
+          <input type="text" v-model="email" class="form-control form-control-lg">
+          <label for="password">Password</label>
+          <input type="password" v-model="password" class="form-control form-control-lg">
+
+          <button type="submit" @click.prevent="login" class="btn btn-primary">Log in</button>
+        </form>
+      </div>
+
+      <div v-else="loggedIn">
+        <button v-on:click="createPost" id="create-post" class="btn btn-secondary">Create Post</button>
+        <button v-on:click="logout" id="logout" class="btn btn-secondary">logout</button>
+
+        <div v-for="post in posts" :id="post.id" class="card mt-5">
+
+          <h2>{{ post.caption }}</h2>
+          <h4>{{ post.comments }}</h4>
+          <button v-on:click="deletePost" class="delete col-2 btn btn-danger">Delete</button>
+          <button v-on:click="modifyPost" class="modify col-2 btn btn-light">Modify</button>
+        </div>
       </div>
 
     </div>
@@ -34,28 +64,93 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-  <script src="js/index.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <script>
     const vm = new Vue({
       el: '#app',
       data: {
+        signupEmail: '',
+        signupPassword: '',
+        email: '',
+        password: '',
         posts: [],
-        createPostResponse: []
+        createPostResponse: [],
+        loggedIn: false,
+        signupButtonClicked: false
       },
       /* Below is an example of a vue instance lifecycle - see documentation
       this is essential to work */
-      created: function () {
-        this.fetchPosts()
-      },
       // created: function () {
-      //   this.modifyPosts()
+      //   this.fetchPosts()
+      // },
+      // process: function () {
+      //   this.loggedIn = true;
       // },
       methods: {
+        signup: async function () {
+
+            const email = this.signupEmail
+            const password = this.signupPassword
+
+            const data = {
+              email,
+              password
+            }
+            const options = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            };
+            const sendData = await fetch('http://localhost:5001/signup', options);
+            const responseObject = await sendData.json();
+            this.signupEmail = ''
+            this.signupPassword = ''
+            this.signupButtonClicked = false         
+        },
+        login: async function () {
+          try {
+
+            const email = this.email
+            const password = this.password
+
+            const data = {
+              email,
+              password
+            }
+
+            const options = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            };
+            const sendData = await fetch('http://localhost:5001/login', options)
+            const responseObject = await sendData.json()
+
+            if (responseObject.token !== undefined) {
+              sessionStorage.setItem('jwt', JSON.stringify(responseObject.token))
+              sessionStorage.setItem('userId', JSON.stringify(responseObject.userId))
+              this.email = ''
+              this.password = ''
+              this.loggedIn = true
+              this.fetchPosts()
+            }
+
+          } catch (error) {
+            console.log(error)
+          }
+        },
         logout: function () {
-          sessionStorage.removeItem('jwt');
-          location.href = "/login.html"
+          if (confirm('If you log out you will need to login again')) {
+            sessionStorage.removeItem('jwt');
+            this.loggedIn = false
+          }
         },
         fetchPosts: async function () {
           const token = JSON.parse(sessionStorage.getItem('jwt'))
@@ -74,39 +169,36 @@
           const userId = JSON.parse(sessionStorage.getItem('userId'))
 
           const caption = prompt('write a caption')
-          console.log(caption)
+          if (caption !== '') {
+            const data = {
+              userId,
+              caption
+            }
 
-          const data = {
-            userId,
-            caption
+            const options = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(data)
+            };
+            const response = await fetch('http://localhost:5001/posts', options);
+            const jsonResponse = await response.json();
+            console.log(jsonResponse.status)
+            vm.createPostResponse = jsonResponse
+            this.fetchPosts()
           }
-          console.log(data)
-          const options = {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-          };
-          const response = await fetch('http://localhost:5001/posts', options);
-          const jsonResponse = await response.json();
-          console.log(jsonResponse.status)
-          vm.createPostResponse = jsonResponse
-          location.reload()
         },
         deletePost: async function () {
-          console.log(event.target.className)
           const postId = event.target.parentNode.id;
           const token = JSON.parse(sessionStorage.getItem('jwt'))
-          // const userId = JSON.parse(sessionStorage.getItem('userId'))
 
           const data = {
-            // userId,
             postId
           }
-          console.log(data)
+
           const options = {
             method: 'DELETE',
             headers: {
@@ -117,24 +209,20 @@
           };
           const response = await fetch('http://localhost:5001/posts', options)
           const jsonData = await response.json()
-          console.log(jsonData)
-          location.reload()
+          this.fetchPosts()
         },
         modifyPost: async function () {
-          console.log(event.target.className)
           const caption = prompt('Modify the caption')
           const comment = prompt('Modify the comments')
           const postId = event.target.parentNode.id;
           const token = JSON.parse(sessionStorage.getItem('jwt'))
-          // const userId = JSON.parse(sessionStorage.getItem('userId'))
 
           const data = {
-            // userId,
             postId,
             caption,
             comment
           }
-          console.log(data)
+
           const options = {
             method: 'PUT',
             headers: {
@@ -145,8 +233,7 @@
           };
           const response = await fetch('http://localhost:5001/posts', options)
           const jsonData = await response.json()
-          console.log(jsonData)
-          location.reload()
+          this.fetchPosts()
         }
       }
     })
