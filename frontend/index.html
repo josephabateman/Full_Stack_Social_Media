@@ -20,14 +20,15 @@
   <div id="app">
     <div v-cloak class="container">
 
-      <button v-show="!signupButtonClicked" v-if="!loggedIn" @click="signupButtonClicked = true" class="btn btn-warning">Sign Up</button>
-      
+      <button v-show="!signupButtonClicked" v-if="!loggedIn" @click="signupButtonClicked = true"
+        class="btn btn-warning">Sign Up</button>
 
+      <!-- sign up button and form -->
       <div v-show="signupButtonClicked" id="sign-up-form" class="form-group">
         <button @click="signupButtonClicked = false" class="btn btn-warning">Log in</button>
         <form action="">
           <label for="email">Email</label>
-          <input type="text" v-model="signupEmail" class="form-control form-control-lg">
+          <input type="email" v-model="signupEmail" class="form-control form-control-lg">
           <label for="password">Password</label>
           <input type="password" v-model="signupPassword" class="form-control form-control-lg">
 
@@ -35,10 +36,12 @@
         </form>
       </div>
 
+      <!-- login button and form -->
+
       <div v-show="!signupButtonClicked" v-if="!loggedIn" id="log-in-form" class="form-group">
         <form action="">
           <label for="email">Email</label>
-          <input type="text" v-model="email" class="form-control form-control-lg">
+          <input type="email" v-model="email" class="form-control form-control-lg">
           <label for="password">Password</label>
           <input type="password" v-model="password" class="form-control form-control-lg">
 
@@ -46,17 +49,42 @@
         </form>
       </div>
 
+      <!-- logged in home page -->
       <div v-else="loggedIn">
-        <button v-on:click="createPost" id="create-post" class="btn btn-secondary">Create Post</button>
+        <button v-on:click="createPostButtonClicked=true; modifyButtonClicked=false" id="create-post" class="btn btn-secondary">Create Post</button>
         <button v-on:click="logout" id="logout" class="btn btn-secondary">logout</button>
 
         <div v-for="post in posts" :id="post.id" class="card mt-5">
-
           <h2>{{ post.caption }}</h2>
           <h4>{{ post.comments }}</h4>
-          <button v-on:click="deletePost" class="delete col-2 btn btn-danger">Delete</button>
-          <button v-on:click="modifyPost" class="modify col-2 btn btn-light">Modify</button>
+
+          <button v-if="post.user_email === userId" v-on:click="deletePost"
+            class="delete col-2 btn btn-danger">Delete</button>
+          <button v-if="post.user_email === userId" v-on:click="modifyButtonClicked=true; createPostButtonClicked=false"
+            class="modify col-2 btn btn-light">Modify</button>
         </div>
+
+        <!-- this needs to be able to show show whether modify or post cicked -->
+        <div v-if="(modifyButtonClicked || createPostButtonClicked)" class="mt-3">
+          <form action="">
+
+            <label for="caption">Write a caption</label>
+            <input type="text" id="writeCaption">
+            <br>
+
+            <label for="file-upload">Upload a gif</label>
+            <input type="file" id="uploadImage">
+            <br>
+
+            <label for="comment">Write a comment</label>
+            <input type="text" id="writeComment">
+            <br>
+
+            <button v-show="createPostButtonClicked" type="submit" @click.prevent="createPost" class="btn btn-primary">Create post</button>
+            <button v-show="modifyButtonClicked" type="submit" @click.prevent="modifyPost" class="btn btn-primary">Modify post</button>
+          </form>
+        </div>
+
       </div>
 
     </div>
@@ -70,6 +98,7 @@
     const vm = new Vue({
       el: '#app',
       data: {
+        userId: '',
         signupEmail: '',
         signupPassword: '',
         email: '',
@@ -77,51 +106,41 @@
         posts: [],
         createPostResponse: [],
         loggedIn: false,
-        signupButtonClicked: false
+        signupButtonClicked: false,
+        createPostButtonClicked: false,
+        modifyButtonClicked: false,
       },
-      /* Below is an example of a vue instance lifecycle - see documentation
-      this is essential to work */
-      // created: function () {
-      //   this.fetchPosts()
-      // },
-      // process: function () {
-      //   this.loggedIn = true;
-      // },
       methods: {
         signup: async function () {
+          const email = this.signupEmail
+          const password = this.signupPassword
 
-            const email = this.signupEmail
-            const password = this.signupPassword
-
-            const data = {
-              email,
-              password
-            }
-            const options = {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-            };
-            const sendData = await fetch('http://localhost:5001/signup', options);
-            const responseObject = await sendData.json();
-            this.signupEmail = ''
-            this.signupPassword = ''
-            this.signupButtonClicked = false         
+          const data = {
+            email,
+            password
+          }
+          const options = {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          };
+          const sendData = await fetch('http://localhost:5001/signup', options);
+          const responseObject = await sendData.json();
+          this.signupEmail = ''
+          this.signupPassword = ''
+          this.signupButtonClicked = false
         },
         login: async function () {
           try {
-
             const email = this.email
             const password = this.password
-
             const data = {
               email,
               password
             }
-
             const options = {
               method: 'POST',
               headers: {
@@ -139,6 +158,9 @@
               this.email = ''
               this.password = ''
               this.loggedIn = true
+
+              const parsedUserId = JSON.parse(sessionStorage.getItem('userId'))
+              this.userId = parsedUserId
               this.fetchPosts()
             }
 
@@ -168,11 +190,17 @@
           const token = JSON.parse(sessionStorage.getItem('jwt'))
           const userId = JSON.parse(sessionStorage.getItem('userId'))
 
-          const caption = prompt('write a caption')
+          // const caption = prompt('write a caption')
+          const caption = document.getElementById('writeCaption').value
+          const image = document.getElementById('uploadImage').value
+          const comment = document.getElementById('writeComment').value
+
           if (caption !== '') {
             const data = {
               userId,
-              caption
+              caption,
+              image,
+              comment
             }
 
             const options = {
@@ -188,6 +216,7 @@
             const jsonResponse = await response.json();
             console.log(jsonResponse.status)
             vm.createPostResponse = jsonResponse
+            this.createPostButtonClicked = false;
             this.fetchPosts()
           }
         },
@@ -212,15 +241,20 @@
           this.fetchPosts()
         },
         modifyPost: async function () {
-          const caption = prompt('Modify the caption')
-          const comment = prompt('Modify the comments')
+          // const caption = prompt('Modify the caption')
+          // const comment = prompt('Modify the comments')
+          const caption = document.getElementById('writeCaption').value
+          const image = document.getElementById('uploadImage').value
+          const comment = document.getElementById('writeComment').value
+          
           const postId = event.target.parentNode.id;
           const token = JSON.parse(sessionStorage.getItem('jwt'))
 
           const data = {
             postId,
             caption,
-            comment
+            comment,
+            image
           }
 
           const options = {
@@ -233,6 +267,7 @@
           };
           const response = await fetch('http://localhost:5001/posts', options)
           const jsonData = await response.json()
+          this.modifyButtonClicked = false
           this.fetchPosts()
         }
       }

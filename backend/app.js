@@ -98,7 +98,7 @@ app.post('/login', (req, res) => {
     }
 })
 
-app.get('/', (req, res) => {
+app.get('/', authenticateToken, (req, res) => {
     try {
         async function displayPosts() {
             const databaseQuery = await pool.query("SELECT * FROM posts");
@@ -114,7 +114,9 @@ app.post('/posts', authenticateToken, (req, res) => {
     async function storePostInDatabase() {
         try {
             const caption = req.body.caption
-            const databaseQuery = await pool.query(`INSERT INTO posts (caption, user_email) VALUES ('${caption}', '${req.body.userId}') RETURNING id;`)
+            const image = req.body.image
+            const comment = req.body.comment
+            const databaseQuery = await pool.query(`INSERT INTO posts (caption, user_email, fileupload, comments) VALUES ('${caption}', '${req.body.userId}', '${image}', '${comment}') RETURNING id;`)
             const postId = databaseQuery.rows[0].id
             res.json({
                 postId: postId,
@@ -164,7 +166,7 @@ async function authenticateToken(req, res, next) {
         const decodedTokenUserId = decodedToken.userId;
         console.log(`decoded token: ${decodedTokenUserId}`)
 
-        if (req.method === 'POST' && decodedToken) {
+        if (req.method === 'POST' && decodedToken || req.method === 'GET' && decodedToken) {
             next()
         } else {
             const query = `select user_email from posts WHERE id = '${req.body.postId}'`
