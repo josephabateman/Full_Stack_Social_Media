@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <title>Full Stack</title>
@@ -18,80 +18,87 @@
 <body>
 
   <div id="app">
-    <div v-cloak class="container">
+    <div v-cloak class="container col-5">
 
-      <button v-show="!signupButtonClicked" v-if="!loggedIn" @click="signupButtonClicked = true"
-        class="btn btn-warning">Sign Up</button>
+      <div id="login-signup-section" v-if="!loggedIn">
+        <!-- sign up/log in button and form -->
+        <div id="sign-up-form" class="form-group">
 
-      <!-- sign up button and form -->
-      <div v-show="signupButtonClicked" id="sign-up-form" class="form-group">
-        <button @click="signupButtonClicked = false" class="btn btn-warning">Log in</button>
-        <form action="">
-          <label for="email">Email</label>
-          <input type="email" v-model="signupEmail" class="form-control form-control-lg">
-          <label for="password">Password</label>
-          <input type="password" v-model="signupPassword" class="form-control form-control-lg">
+            <button @click="signupButtonClicked = true; loginButtonClicked = false" id="sign_up_btn"
+              class="btn btn-secondary">Sign Up</button>
+            <button @click="signupButtonClicked = false; loginButtonClicked = true" id="log_in_btn"
+              class="btn btn-primary">Log in</button>
 
-          <button type="submit" @click.prevent="signup" class="btn btn-primary">Sign up</button>
-        </form>
-      </div>
+          <form v-show="(signupButtonClicked || loginButtonClicked)" action="">
+            <label for="email">Email</label>
+            <input type="email" v-model="email" id="email" class="form-control form-control-lg">
+            <label for="password">Password</label>
+            <input type="password" v-model="password" id="password" class="form-control form-control-lg">
 
-      <!-- login button and form -->
+            <button id="sign-up-button" v-show="signupButtonClicked" type="submit" @click.prevent="signup"
+              class="btn btn-primary">Sign up</button>
+            <button id="log-in-button" v-show="loginButtonClicked" type="submit" @click.prevent="login"
+              class="btn btn-primary">Log in</button>
+          </form>
 
-      <div v-show="!signupButtonClicked" v-if="!loggedIn" id="log-in-form" class="form-group">
-        <form action="">
-          <label for="email">Email</label>
-          <input type="email" v-model="email" class="form-control form-control-lg">
-          <label for="password">Password</label>
-          <input type="password" v-model="password" class="form-control form-control-lg">
-
-          <button type="submit" @click.prevent="login" class="btn btn-primary">Log in</button>
-        </form>
-      </div>
-
-      <!-- logged in home page -->
-      <div v-else="loggedIn">
-        <button v-on:click="createPostButtonClicked=true; modifyButtonClicked=false" id="create-post" class="btn btn-secondary">Create Post</button>
-        <button v-on:click="logout" id="logout" class="btn btn-secondary">logout</button>
-
-        <div v-for="post in posts" :id="post.id" class="card mt-5">
-          <h2>{{ post.caption }}</h2>
-          <h4>{{ post.comments }}</h4>
-
-          <button v-if="post.user_email === userId" v-on:click="deletePost"
-            class="delete col-2 btn btn-danger">Delete</button>
-          <button v-if="post.user_email === userId" v-on:click="modifyButtonClicked=true; createPostButtonClicked=false"
-            class="modify col-2 btn btn-light">Modify</button>
         </div>
 
-        <!-- this needs to be able to show show whether modify or post cicked -->
-        <div v-if="(modifyButtonClicked || createPostButtonClicked)" class="mt-3">
-          <form action="">
+      </div>
 
-            <label for="caption">Write a caption</label>
+
+      <!-- logged in home page -->
+      <!-- this needs to be able to show show whether modify or post cicked -->
+      <div id="logged-in-section" v-if="loggedIn">
+        <button class="btn btn-secondary">Home</button>
+        <button @click="createPostButtonClicked=true; modifyButtonClicked=false" id="create-post"
+          class="btn btn-secondary">Create Post</button>
+        <button @click="logout" id="logout" class="btn btn-secondary">logout</button>
+
+        <div v-if="(modifyButtonClicked || createPostButtonClicked)" class="mt-3">
+          <form enctype="multipart/form-data">
+
+            <label for="writeCaption">Write a caption</label>
             <input type="text" id="writeCaption">
             <br>
 
-            <label for="file-upload">Upload a gif</label>
-            <input type="file" id="uploadImage">
+            <label for="file_to_submit">Upload a gif</label>
+            <input type="file" id="file_to_submit">
             <br>
 
-            <label for="comment">Write a comment</label>
-            <input type="text" id="writeComment">
-            <br>
-
-            <button v-show="createPostButtonClicked" type="submit" @click.prevent="createPost" class="btn btn-primary">Create post</button>
-            <button v-show="modifyButtonClicked" type="submit" @click.prevent="modifyPost" class="btn btn-primary">Modify post</button>
+            <button v-show="createPostButtonClicked" type="submit" @click.prevent="createPost"
+              class="btn btn-primary">Create post</button>
+            <button v-show="modifyButtonClicked" type="submit" @click.prevent="modifyPost"
+              class="btn btn-primary">Modify
+              post</button>
           </form>
         </div>
 
+        <!-- logged in -->
+
+        <div v-if="!createPostButtonClicked" v-show="!modifyButtonClicked" v-for="post in posts" class="card mt-5">
+          <p>{{ post.user_email }}</p>
+          <h2>{{ post.caption }}</h2>
+          <img :src="post.file_upload" alt="" class="rounded mx-auto d-block img-fluid width: 100%">
+          <div class="mt-2">
+            <i class="far fa-comment-alt fa-lg pr-2"></i>
+            <i class="far fa-thumbs-up fa-lg pr-2"></i>
+          </div>
+
+          <!-- these buttons should only show if the user has access to delete and modify. even if they show they should not be granted access -->
+          <div class="user_options">
+            <i :id="post.post_id" v-if="post.user_email === userId" @click="deletePost" class="delete far fa-trash-alt" style="cursor:pointer"> Delete</i>
+            <i :id="post.post_id" v-if="post.user_email === userId" @click.prevent="postIdFunc" class="modify far fa-edit" style="cursor:pointer"> Edit</i>
+          </div>
+        </div>
+        
       </div>
 
     </div>
   </div>
-  </div>
 
+  <script src="https://kit.fontawesome.com/680635b0b6.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <!-- do i need axios? -->
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   <script>
@@ -99,47 +106,69 @@
       el: '#app',
       data: {
         userId: '',
-        signupEmail: '',
-        signupPassword: '',
         email: '',
         password: '',
         posts: [],
         createPostResponse: [],
         loggedIn: false,
         signupButtonClicked: false,
+        loginButtonClicked: true,
         createPostButtonClicked: false,
         modifyButtonClicked: false,
+        postIdToModify: ''
+      },
+      mounted: function () {
+        const logInBtn = document.getElementById('log_in_btn')
+        const signUpBtn = document.getElementById('sign_up_btn')
+        signUpBtn.onclick = () => {
+          signUpBtn.classList.remove('btn-secondary')
+          logInBtn.classList.add('btn-secondary')
+          signUpBtn.classList.add('btn-primary')
+        }
+        logInBtn.onclick = () => {
+          logInBtn.classList.remove('btn-secondary')
+          signUpBtn.classList.add('btn-secondary')
+          logInBtn.classList.add('btn-primary')
+        }
       },
       methods: {
-        signup: async function () {
-          const email = this.signupEmail
-          const password = this.signupPassword
-
-          const data = {
-            email,
-            password
-          }
-          const options = {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          };
-          const sendData = await fetch('http://localhost:5001/signup', options);
-          const responseObject = await sendData.json();
-          this.signupEmail = ''
-          this.signupPassword = ''
-          this.signupButtonClicked = false
+        postIdFunc: function () {
+          this.postIdToModify = event.target.id;
+          this.modifyButtonClicked = true;
+          this.createPostButtonClicked = false
+          // console.log(this.postIdToModify)
         },
-        login: async function () {
+        signup: async function () {
           try {
-            const email = this.email
-            const password = this.password
             const data = {
-              email,
-              password
+              email: this.email,
+              password: this.password
+            }
+            const options = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            };
+            const request = await fetch('http://localhost:5001/signup', options);
+            const response = await request.json();
+            if (response.error) {
+              alert(response.error)
+            } else {
+              this.signupButtonClicked = false
+              await this.login()
+            }
+          } catch (error) {
+            console.log(error)
+          }
+        },
+        login: async function (email, password) {
+          try {
+            const data = {
+              email: this.email,
+              password: this.password
             }
             const options = {
               method: 'POST',
@@ -149,29 +178,32 @@
               },
               body: JSON.stringify(data)
             };
-            const sendData = await fetch('http://localhost:5001/login', options)
-            const responseObject = await sendData.json()
-
-            if (responseObject.token !== undefined) {
-              sessionStorage.setItem('jwt', JSON.stringify(responseObject.token))
-              sessionStorage.setItem('userId', JSON.stringify(responseObject.userId))
+            const request = await fetch('http://localhost:5001/login', options)
+            const response = await request.json()
+            if (response.error) {
+              alert(response.error)
+            }
+            if (response.token !== undefined) {
+              sessionStorage.setItem('jwt', JSON.stringify(response.token))
+              sessionStorage.setItem('userId', JSON.stringify(response.userId))
               this.email = ''
               this.password = ''
               this.loggedIn = true
 
               const parsedUserId = JSON.parse(sessionStorage.getItem('userId'))
               this.userId = parsedUserId
-              this.fetchPosts()
+              await this.fetchPosts()
             }
-
           } catch (error) {
             console.log(error)
           }
         },
         logout: function () {
-          if (confirm('If you log out you will need to login again')) {
+          if (confirm('If you log out you will need to log in again')) {
             sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('userId');
             this.loggedIn = false
+            location.reload()
           }
         },
         fetchPosts: async function () {
@@ -190,38 +222,74 @@
           const token = JSON.parse(sessionStorage.getItem('jwt'))
           const userId = JSON.parse(sessionStorage.getItem('userId'))
 
-          // const caption = prompt('write a caption')
           const caption = document.getElementById('writeCaption').value
-          const image = document.getElementById('uploadImage').value
-          const comment = document.getElementById('writeComment').value
+          const file = document.getElementById('file_to_submit').files[0]
 
           if (caption !== '') {
-            const data = {
-              userId,
-              caption,
-              image,
-              comment
-            }
+            // console.log(file)
+            const fd = new FormData()
+            fd.append('myFile', file)
+            fd.append('userId', userId)
+            fd.append('caption', caption)
 
             const options = {
               method: 'POST',
               headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                // 'Accept': 'application/json',
+                // 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
               },
-              body: JSON.stringify(data)
+              body: fd
             };
+
+            const request = await fetch('http://localhost:5001/posts', options);
+            const response = await request.json();
+            if (response.error) {
+              alert(response.error)
+            }
+            vm.createPostResponse = response
+            this.createPostButtonClicked = false;
+            await this.fetchPosts()
+          }
+        },
+        modifyPost: async function () {
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          // const userId = JSON.parse(sessionStorage.getItem('userId'))
+
+          const caption = document.getElementById('writeCaption').value
+          const file = document.getElementById('file_to_submit').files[0]
+          const postId = this.postIdToModify;
+
+          if (caption !== '') {
+            // console.log(file)
+            const fd = new FormData()
+            fd.append('myFile', file)
+            // fd.append('userId', userId)
+            fd.append('caption', caption)
+            fd.append('postId', postId)
+
+            const options = {
+              method: 'PUT',
+              headers: {
+                // 'Accept': 'application/json',
+                // 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: fd
+            };
+
             const response = await fetch('http://localhost:5001/posts', options);
             const jsonResponse = await response.json();
-            console.log(jsonResponse.status)
-            vm.createPostResponse = jsonResponse
-            this.createPostButtonClicked = false;
-            this.fetchPosts()
+            console.log(jsonResponse)
+            if (jsonResponse.error) {
+              alert(jsonResponse.error)
+            }
+            this.modifyButtonClicked = false
+            await this.fetchPosts()
           }
         },
         deletePost: async function () {
-          const postId = event.target.parentNode.id;
+          const postId = event.target.id;
           const token = JSON.parse(sessionStorage.getItem('jwt'))
 
           const data = {
@@ -236,40 +304,16 @@
             },
             body: JSON.stringify(data)
           };
-          const response = await fetch('http://localhost:5001/posts', options)
-          const jsonData = await response.json()
-          this.fetchPosts()
-        },
-        modifyPost: async function () {
-          // const caption = prompt('Modify the caption')
-          // const comment = prompt('Modify the comments')
-          const caption = document.getElementById('writeCaption').value
-          const image = document.getElementById('uploadImage').value
-          const comment = document.getElementById('writeComment').value
-          
-          const postId = event.target.parentNode.id;
-          const token = JSON.parse(sessionStorage.getItem('jwt'))
-
-          const data = {
-            postId,
-            caption,
-            comment,
-            image
+          const request = await fetch('http://localhost:5001/posts', options)
+          const jsonResponse = await request.json()
+          if (jsonResponse.error) {
+            alert(jsonResponse.error)
+          } else {
+            alert(jsonResponse.message)
           }
-
-          const options = {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-          };
-          const response = await fetch('http://localhost:5001/posts', options)
-          const jsonData = await response.json()
-          this.modifyButtonClicked = false
-          this.fetchPosts()
+          await this.fetchPosts()
         }
+
       }
     })
   </script>
