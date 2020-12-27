@@ -75,10 +75,10 @@
 
         <!-- logged in -->
 
-        <div v-if="!createPostButtonClicked" v-show="!modifyButtonClicked" v-for="post in posts" class="card mt-5">
-          <p>{{ post.user_email }}</p>
-          <h2>{{ post.caption }}</h2>
-          <img :src="post.file_upload" alt="" class="rounded mx-auto d-block img-fluid width: 100%">
+        <div v-if="!createPostButtonClicked" v-show="!modifyButtonClicked" v-for="post in posts" class="card mt-5 bg-light border-0">
+          <p class="p-2">{{ post.user_id }}</p>
+          <h2 class="p-2">{{ post.caption }}</h2>
+          <img :src="post.file_upload" alt="" class="mx-auto d-block img-fluid width: 100%">
           <div class="mt-2">
             <i class="far fa-comment-alt fa-lg pr-2"></i>
             <i class="far fa-thumbs-up fa-lg pr-2"></i>
@@ -86,8 +86,8 @@
 
           <!-- these buttons should only show if the user has access to delete and modify. even if they show they should not be granted access -->
           <div class="user_options">
-            <i :id="post.post_id" v-if="post.user_email === userId" @click="deletePost" class="delete far fa-trash-alt" style="cursor:pointer"> Delete</i>
-            <i :id="post.post_id" v-if="post.user_email === userId" @click.prevent="postIdFunc" class="modify far fa-edit" style="cursor:pointer"> Edit</i>
+            <i :id="post.post_id" v-if="post.user_id === userId" @click="deletePost" class="delete far fa-trash-alt" style="cursor:pointer"> Delete</i>
+            <i :id="post.post_id" v-if="post.user_id === userId" @click.prevent="postIdFunc" class="modify far fa-edit" style="cursor:pointer"> Edit</i>
           </div>
         </div>
         
@@ -139,6 +139,12 @@
           // console.log(this.postIdToModify)
         },
         signup: async function () {
+          //basic validation
+          if (this.email === '' || this.password === '') {
+            alert('Both fields must have values')
+            return
+          }
+
           try {
             const data = {
               email: this.email,
