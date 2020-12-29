@@ -58,7 +58,7 @@
           <form enctype="multipart/form-data">
 
             <label for="writeCaption">Write a caption</label>
-            <input type="text" id="writeCaption">
+            <input type="text" id="writeCaption" v-model="modifyPostData.caption">
             <br>
 
             <label for="file_to_submit">Upload a gif</label>
@@ -74,14 +74,20 @@
         </div>
 
         <!-- logged in -->
+        <button @click="deleteUser">delete user account</button>
 
         <div v-if="!createPostButtonClicked" v-show="!modifyButtonClicked" v-for="post in posts" class="card mt-5 bg-light border-0">
-          <p class="p-2">{{ post.user_id }}</p>
-          <h2 class="p-2">{{ post.caption }}</h2>
-          <img :src="post.file_upload" alt="" class="mx-auto d-block img-fluid width: 100%">
-          <div class="mt-2">
-            <i class="far fa-comment-alt fa-lg pr-2"></i>
+          <p id="convertedTime" class="p-2">{{ post.convertedTime }}</p>
+          <h2 id="postCaption" class="p-2">{{ post.caption }}</h2>
+          <img id="fileUploadImage" :src="post.file_upload" alt="" class="mx-auto d-block img-fluid width: 100%">
+          <div id="social_icons" class="mt-2">
+            <i class="far fa-comment-alt fa-lg pr-2" :id="post.post_id" @click.prevent="postComment"></i>
             <i class="far fa-thumbs-up fa-lg pr-2"></i>
+          </div>
+<!--          <div class="card" :id=`comment_list_${post.post_id}`></div>-->
+          <div v-for="comment in post.comments" class="card">
+            <p>{{ comment.userId }} wrote: {{ comment.comment }}</p>
+            <p :id="comment.commentId" v-if="comment.userId === userId" @click="deleteComment">delete comment</p>
           </div>
 
           <!-- these buttons should only show if the user has access to delete and modify. even if they show they should not be granted access -->
@@ -90,7 +96,7 @@
             <i :id="post.post_id" v-if="post.user_id === userId" @click.prevent="postIdFunc" class="modify far fa-edit" style="cursor:pointer"> Edit</i>
           </div>
         </div>
-        
+
       </div>
 
     </div>
@@ -109,13 +115,14 @@
         email: '',
         password: '',
         posts: [],
-        createPostResponse: [],
+        modifyPostData: [],
         loggedIn: false,
         signupButtonClicked: false,
         loginButtonClicked: true,
         createPostButtonClicked: false,
         modifyButtonClicked: false,
-        postIdToModify: ''
+        postIdToModify: '',
+        // convertedTime: []
       },
       mounted: function () {
         const logInBtn = document.getElementById('log_in_btn')
@@ -131,11 +138,25 @@
           logInBtn.classList.add('btn-primary')
         }
       },
+      computed: {
+
+      },
       methods: {
+        //clean up the parent nodes thing!
+        fetchOne: function() {
+          const postId = document.getElementById(this.postIdToModify)
+
+          this.modifyPostData = {
+            time: postId.parentNode.parentNode.childNodes[0].innerText,
+            caption: postId.parentNode.parentNode.childNodes[2].innerText
+          }
+        },
         postIdFunc: function () {
           this.postIdToModify = event.target.id;
           this.modifyButtonClicked = true;
           this.createPostButtonClicked = false
+          //run fetchOne method which prefills modify data values
+          this.fetchOne()
           // console.log(this.postIdToModify)
         },
         signup: async function () {
@@ -222,8 +243,25 @@
           };
           const response = await fetch('http://localhost:5001', options)
           const jsonData = await response.json()
-          vm.posts = jsonData
+          // console.log(jsonData)
+
+          vm.posts = jsonData.reverse()
+          // await this.parseComments()
+
         },
+        // parseComments: function() {
+        //
+        //   // ive done the loop.now i need to somehow replace the values of the strings with these json objects
+        //   for (let i = 0; i < this.posts.length; i++) {
+        //     const commentList = this.posts[i].comments
+        //     // console.log(commentList + i)
+        //     // console.log(commentList.length)
+        //    for (let j = 0; j < commentList.length; j++) {
+        //      console.log(JSON.parse(commentList[j]))
+        //    }
+        //   }
+        //
+        // },
         createPost: async function () {
           const token = JSON.parse(sessionStorage.getItem('jwt'))
           const userId = JSON.parse(sessionStorage.getItem('userId'))
@@ -318,6 +356,117 @@
             alert(jsonResponse.message)
           }
           await this.fetchPosts()
+        },
+        deleteUser: async function () {
+          const deletePostsToo = prompt('This will also delete all your past posts. Are you sure you want to proceed? Type YES to proceed')
+          console.log(deletePostsToo)
+          if (deletePostsToo === 'yes' || deletePostsToo === 'YES') {
+            const token = JSON.parse(sessionStorage.getItem('jwt'))
+
+            const options = {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              // body: JSON.stringify(data)
+            };
+            const request = await fetch('http://localhost:5001/deleteUser', options)
+            const jsonResponse = await request.json()
+            if (jsonResponse.error) {
+              alert(jsonResponse.error)
+            } else {
+              alert(jsonResponse.message)
+            }
+            sessionStorage.removeItem('jwt');
+            sessionStorage.removeItem('userId');
+            location.reload()
+          }
+        },
+        postComment: async function () {
+          const writeAComment = prompt('write a comment')
+          const token = JSON.parse(sessionStorage.getItem('jwt'))
+          const postId = event.target.id;
+
+          if (writeAComment !== '') {
+            const data = {
+              comment: writeAComment,
+              post_Id: postId
+            }
+
+            const options = {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(data)
+            };
+
+            const request = await fetch('http://localhost:5001/addComment', options);
+            const response = await request.json();
+            if (response.error) {
+              alert(response.error)
+            }
+            // vm.createPostResponse = response
+            // this.createPostButtonClicked = false;
+            await this.fetchPosts()
+          }
+        },
+        deleteComment: async function() {
+          if (confirm("Your comment will be permanently deleted")) {
+            const token = JSON.parse(sessionStorage.getItem('jwt'))
+
+            let postId
+            let comment
+            let userId
+
+            const commentId = event.target.id
+            for (post of vm.posts) {
+              for (commentList of post.comments) {
+                if (commentList.commentId === commentId) {
+                  postId = commentList.postId
+                  comment = commentList.comment
+                  userId = commentList.userId
+                }
+              }
+            }
+
+            const data = {
+              commentId: commentId,
+              userId: userId,
+              comment: comment,
+              postId: postId
+            }
+
+            const options = {
+              method: 'DELETE',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(data)
+            };
+            const request = await fetch('http://localhost:5001/deleteComment', options)
+            const jsonResponse = await request.json()
+            if (jsonResponse.error) {
+              alert(jsonResponse.error)
+            } else {
+              alert(jsonResponse.message)
+            }
+          }
+
+          else {
+            console.log("comment not deleted");
+          }
+
+
+            // sessionStorage.removeItem('jwt');
+            // sessionStorage.removeItem('userId');
+            this.fetchPosts()
+
         }
 
       }
