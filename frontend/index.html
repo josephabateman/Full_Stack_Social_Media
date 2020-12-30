@@ -87,9 +87,8 @@
 <!--          <div class="card" :id=`comment_list_${post.post_id}`></div>-->
           <div v-for="comment in post.comments" class="card">
             <p>{{ comment.userId }} wrote: {{ comment.comment }}</p>
-            <p :id="comment.commentId" v-if="comment.userId === userId" @click="deleteComment">delete comment</p>
+            <i :id="comment.commentId" v-if="comment.userId === userId" @click="deleteComment" class="delete far fa-trash-alt" style="cursor:pointer">Delete your comment</i>
           </div>
-
           <!-- these buttons should only show if the user has access to delete and modify. even if they show they should not be granted access -->
           <div class="user_options">
             <i :id="post.post_id" v-if="post.user_id === userId" @click="deletePost" class="delete far fa-trash-alt" style="cursor:pointer"> Delete</i>
@@ -245,23 +244,9 @@
           const jsonData = await response.json()
           // console.log(jsonData)
 
-          vm.posts = jsonData.reverse()
-          // await this.parseComments()
+          vm.posts = jsonData
 
         },
-        // parseComments: function() {
-        //
-        //   // ive done the loop.now i need to somehow replace the values of the strings with these json objects
-        //   for (let i = 0; i < this.posts.length; i++) {
-        //     const commentList = this.posts[i].comments
-        //     // console.log(commentList + i)
-        //     // console.log(commentList.length)
-        //    for (let j = 0; j < commentList.length; j++) {
-        //      console.log(JSON.parse(commentList[j]))
-        //    }
-        //   }
-        //
-        // },
         createPost: async function () {
           const token = JSON.parse(sessionStorage.getItem('jwt'))
           const userId = JSON.parse(sessionStorage.getItem('userId'))
@@ -411,8 +396,9 @@
             }
             // vm.createPostResponse = response
             // this.createPostButtonClicked = false;
-            await this.fetchPosts()
+
           }
+          await this.fetchPosts()
         },
         deleteComment: async function() {
           if (confirm("Your comment will be permanently deleted")) {
@@ -423,8 +409,28 @@
             let userId
 
             const commentId = event.target.id
-            for (post of vm.posts) {
-              for (commentList of post.comments) {
+
+            //this works but prints can not read property of undefined commentId
+            // for (let i = 0; i < vm.posts.length; i++) {
+            //   for (let j = 0; j < vm.posts.length; j++) {
+            //     console.log(vm.posts[i].comments[j].commentId)
+            //   }
+            // }
+
+            //this doesn't do what it should
+            // for (let i = 0; i < vm.posts.length; i++) {
+            //   for (let j = 0; j < vm.posts.length; j++) {
+            //     if (vm.posts[i].comments[j].commentId == commentId) {
+            //       postId = vm.posts[i].comments[j].postId
+            //       comment = vm.posts[i].comments[j].comment
+            //       userId = vm.posts[i].comments[j].userId
+            //     }
+            //   }
+            // }
+
+            // this stopped working saying error type but now works
+            for (let post of vm.posts) {
+              for (let commentList of post.comments) {
                 if (commentList.commentId === commentId) {
                   postId = commentList.postId
                   comment = commentList.comment
@@ -465,7 +471,7 @@
 
             // sessionStorage.removeItem('jwt');
             // sessionStorage.removeItem('userId');
-            this.fetchPosts()
+            await this.fetchPosts()
 
         }
 
