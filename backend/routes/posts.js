@@ -1,22 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const { Pool } = require('pg')
 const authenticateToken = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 require('dotenv').config()
 const fs = require('fs');
-const path = require('path');
 const randomstring = require("randomstring");
 
-//replace all below names with env variables
-const databaseName = "postgres"
-const pool = new Pool({
-    user: "postgres",
-    password: "password",
-    host: "Josephs-MacBook-Pro.local",
-    port: 1003,
-    database: databaseName
-})
+const pool = require('../functions/db-connect')
 
 router.get('/', (req, res) => {
     try {
@@ -36,7 +26,6 @@ router.get('/', (req, res) => {
                 let difference = timeNow - milliseconds
                 let timeElapsed = new Date(difference)
 
-                //time calculations
                 const seconds = timeElapsed / 1000
                 const minutes = seconds / 60
                 const hours = minutes / 60
@@ -48,7 +37,9 @@ router.get('/', (req, res) => {
                 let measurement
                 if (minutes <= 1) {
                     measurement = `Less than a minute ago`
-                } else if (minutes > 1 && minutes < 60) {
+                } else if (minutes > 1 && minutes < 2) {
+                    measurement = `A minute ago`
+                } else if (minutes > 2 && minutes < 60) {
                     measurement = `${Math.round(minutes)} minutes ago`
                 } else if (minutes >= 60 && minutes < 120) {
                     measurement = `about an hour ago`
@@ -68,8 +59,6 @@ router.get('/', (req, res) => {
                     post.testarray.forEach(function(comment, i) {
                         if (typeof comment == "string")
                             post.testarray[i] = JSON.parse(comment); });
-
-                    // a.forEach(function(item, i) { if (item == 3452) a[i] = 1010; });
                 }
 
                 // i send the get object here
@@ -193,55 +182,6 @@ router.delete('/posts', authenticateToken, (req, res) => {
         }
     }
     deletePost()
-})
-
-router.delete('/deleteUser', authenticateToken, (req, res) => {
-    async function deleteUser() {
-        try {
-
-            const decodedUserId = res.locals.testing
-            const client = await pool.connect()
-            const result = await client.query(`SELECT * FROM users WHERE user_id = '${decodedUserId}'`)
-            const databaseId = result.rows[0].user_id
-            // console.log(decodedUserId)
-            // console.log(databaseId)
-
-            if (databaseId === decodedUserId) {
-                const client = await pool.connect()
-                //use a join instead of three queries!
-                const databaseQuery = await client.query(`SELECT file_upload FROM posts WHERE user_id = '${decodedUserId}';`)
-                await client.query(`DELETE FROM posts WHERE user_id = '${decodedUserId}';`)
-                await client.query(`DELETE FROM users WHERE user_id = '${decodedUserId}'`)
-                client.release()
-                res.json({
-                    message: 'user account deleted successfully'
-                })
-
-                //this gets all the filenames from database and splits off the filename, pushing to array for deletion
-                let fileUploadsArray = []
-                databaseQuery.rows.forEach(row => fileUploadsArray.push(row.file_upload.split('/uploads/')[1]))
-
-                fs.readdir('uploads/', (err, files) => {
-                    if (err) throw err;
-                    for (const file of files) {
-                        //list array matches here
-                        if(fileUploadsArray.includes(file)) {
-                            fs.unlink(path.join('uploads/', file), err => {
-                                if (err) throw err;
-                            });
-                        }
-                    }
-                });
-            } else {
-                res.status(403).json({
-                    error: 'You are not authorised to delete this post'
-                })
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    deleteUser()
 })
 
 module.exports = router

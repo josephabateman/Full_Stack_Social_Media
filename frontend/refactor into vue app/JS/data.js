@@ -1,0 +1,11 @@
+userId: '',
+email: '',
+password: '',
+posts: [],
+modifyPostData: [],
+loggedIn: false,
+signupButtonClicked: false,
+loginButtonClicked: true,
+createPostButtonClicked: false,
+modifyButtonClicked: false,
+postIdToModify: ''

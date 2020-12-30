@@ -1,23 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const { Pool } = require('pg')
-// const authenticateToken = require('../middleware/auth');
-// const multer = require('../middleware/multer-config');
 const validator = require("email-validator");
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config()
 const randomstring = require("randomstring");
-
-//replace all below names with env variables
-const databaseName = "postgres"
-const pool = new Pool({
-    user: "postgres",
-    password: "password",
-    host: "Josephs-MacBook-Pro.local",
-    port: 1003,
-    database: databaseName
-})
+const authenticateToken = require('../middleware/auth');
+const pool = require('../functions/db-connect')
 
 router.post('/signup', (req, res) => {
     try {
@@ -100,6 +91,55 @@ router.post('/login', (req, res) => {
         console.log(error)
         return [];
     }
+})
+
+router.delete('/deleteUser', authenticateToken, (req, res) => {
+    async function deleteUser() {
+        try {
+
+            const decodedUserId = res.locals.testing
+            const client = await pool.connect()
+            const result = await client.query(`SELECT * FROM users WHERE user_id = '${decodedUserId}'`)
+            const databaseId = result.rows[0].user_id
+            // console.log(decodedUserId)
+            // console.log(databaseId)
+
+            if (databaseId === decodedUserId) {
+                const client = await pool.connect()
+                //use a join instead of three queries!
+                const databaseQuery = await client.query(`SELECT file_upload FROM posts WHERE user_id = '${decodedUserId}';`)
+                await client.query(`DELETE FROM posts WHERE user_id = '${decodedUserId}';`)
+                await client.query(`DELETE FROM users WHERE user_id = '${decodedUserId}'`)
+                client.release()
+                res.json({
+                    message: 'user account deleted successfully'
+                })
+
+                //this gets all the filenames from database and splits off the filename, pushing to array for deletion
+                let fileUploadsArray = []
+                databaseQuery.rows.forEach(row => fileUploadsArray.push(row.file_upload.split('/uploads/')[1]))
+
+                fs.readdir('uploads/', (err, files) => {
+                    if (err) throw err;
+                    for (const file of files) {
+                        //list array matches here
+                        if(fileUploadsArray.includes(file)) {
+                            fs.unlink(path.join('uploads/', file), err => {
+                                if (err) throw err;
+                            });
+                        }
+                    }
+                });
+            } else {
+                res.status(403).json({
+                    error: 'You are not authorised to delete this post'
+                })
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    deleteUser()
 })
 
 module.exports = router

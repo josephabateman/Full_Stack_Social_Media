@@ -1,19 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const { Pool } = require('pg')
 const authenticateToken = require('../middleware/auth');
 require('dotenv').config()
 const randomstring = require("randomstring");
 
-//replace all below names with env variables
-const databaseName = "postgres"
-const pool = new Pool({
-    user: "postgres",
-    password: "password",
-    host: "Josephs-MacBook-Pro.local",
-    port: 1003,
-    database: databaseName
-})
+const pool = require('../functions/db-connect')
 
 router.post('/addComment', authenticateToken, (req, res) => {
     async function addComment() {
