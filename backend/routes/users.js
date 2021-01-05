@@ -14,6 +14,9 @@ router.post('/signup', (req, res) => {
     try {
         const email = req.body.email
         const password = req.body.password
+        const firstName = req.body.firstName
+        const lastName = req.body.lastName
+
         const postIdRandStr = randomstring.generate(20)
         const validEmail = validator.validate(email);
 
@@ -29,7 +32,7 @@ router.post('/signup', (req, res) => {
                 } else {
                     try {
                         const client = await pool.connect()
-                        await client.query(`INSERT INTO users (user_email, password, user_id) VALUES ('${email}', '${hash}', '${postIdRandStr}');`)
+                        await client.query(`INSERT INTO users (user_email, password, user_id, first_name, last_name) VALUES ('${email}', '${hash}', '${postIdRandStr}', '${firstName}', '${lastName}');`)
                         client.release()
                         res.status(200).json({
                             message: 'email and password stored successfully'
@@ -66,18 +69,25 @@ router.post('/login', (req, res) => {
 
             const databaseUserId = databaseQuery.rows[0].user_id
             const databasePassword = databaseQuery.rows[0].password
+            const databaseFirstName = databaseQuery.rows[0].first_name
+            const databaseLastName = databaseQuery.rows[0].last_name
 
             bcrypt.compare(req.body.password, databasePassword).then(function (passesValidation) {
                 if (passesValidation) {
                     const accessToken = jwt.sign({
-                            userId: databaseUserId
+                        // remove the userid
+                            userId: databaseUserId,
+                            firstName: databaseFirstName,
+                            lastName: databaseLastName
                         },
                         process.env.ACCESS_TOKEN_SECRET, {
                             expiresIn: '24h'
                         });
                     res.status(200).json({
                         token: accessToken,
-                        userId: databaseUserId
+                        userId: databaseUserId,
+                        // databaseFirstName: databaseFirstName,
+                        // databaseLastName: databaseLastName
                     })
                 } else {
                     res.status(403).json({

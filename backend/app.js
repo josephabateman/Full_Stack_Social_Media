@@ -16,10 +16,10 @@ app.use((req, res, next) => {
 app.use("/uploads", express.static(__dirname + '/uploads'));
 app.use(express.json())
 
-const router = require('./routes/users')
-const postsRouter = require('./routes/posts')
-const commentsRouter = require('./routes/comments')
+const users = require('./routes/users')
+const posts = require('./routes/posts')
+const comments = require('./routes/comments')
 
-app.use(router)
-app.use(postsRouter)
-app.use(commentsRouter)
+app.use(users)
+app.use(posts)
+app.use(comments)

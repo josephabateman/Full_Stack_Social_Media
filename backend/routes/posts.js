@@ -8,7 +8,7 @@ const randomstring = require("randomstring");
 
 const pool = require('../functions/db-connect')
 
-router.get('/', (req, res) => {
+router.get('/', authenticateToken, (req, res) => {
     try {
         async function displayPosts() {
             const client = await pool.connect()
@@ -55,10 +55,10 @@ router.get('/', (req, res) => {
                     measurement = `${Math.trunc(years)} years ago`
                 }
 
-                if (post.testarray !== null) {
-                    post.testarray.forEach(function(comment, i) {
+                if (post.public_comments !== null) {
+                    post.public_comments.forEach(function(comment, i) {
                         if (typeof comment == "string")
-                            post.testarray[i] = JSON.parse(comment); });
+                            post.public_comments[i] = JSON.parse(comment); });
                 }
 
                 // i send the get object here
@@ -67,8 +67,9 @@ router.get('/', (req, res) => {
                     file_upload: post.file_upload,
                     user_id: post.user_id,
                     post_id: post.post_id,
+                    users_read: post.users_read,
                     time_stamp: post.time_stamp,
-                    comments: post.testarray,
+                    comments: post.public_comments,
                     convertedTime: measurement
                 }
                 sendArray.push(getObject)
@@ -80,6 +81,91 @@ router.get('/', (req, res) => {
         displayPosts();
     } catch (error) {
         res.status(404).json('could not GET items!')
+        return [];
+    }
+});
+
+router.get('/:id', authenticateToken, (req, res) => {
+    try {
+        async function fetchOne() {
+            // console.log(req.params.id)
+            const decodedUserId = res.locals.testing
+            const client = await pool.connect()
+            let databaseQuery
+            // this isn't very secure
+            if (req.params.id === 'userId') {
+                databaseQuery = await pool.query(`SELECT * FROM posts WHERE user_id = '${decodedUserId}'`)
+            } else {
+                databaseQuery = await client.query(`SELECT * FROM posts WHERE post_id = '${req.params.id}' LIMIT 1;`);
+            }
+            client.release()
+            // console.log(databaseQuery.rows)
+            const sendArray = []
+            // console.log(databaseQuery.rows)
+
+            for (post of databaseQuery.rows) {
+
+                //here is where i convert milliseconds to time elapsed since posted
+                let milliseconds = parseInt(post.time_stamp)
+                let timeNow = Date.now()
+                let difference = timeNow - milliseconds
+                let timeElapsed = new Date(difference)
+
+                const seconds = timeElapsed / 1000
+                const minutes = seconds / 60
+                const hours = minutes / 60
+                const days = hours / 24
+                const weeks = days / 30
+                const years = days / 365
+
+                //use a switch statement
+                let measurement
+                if (minutes <= 1) {
+                    measurement = `Less than a minute ago`
+                } else if (minutes > 1 && minutes < 2) {
+                    measurement = `A minute ago`
+                } else if (minutes > 2 && minutes < 60) {
+                    measurement = `${Math.round(minutes)} minutes ago`
+                } else if (minutes >= 60 && minutes < 120) {
+                    measurement = `about an hour ago`
+                } else if (minutes >= 120) {
+                    measurement = `${Math.trunc(hours)} hours ago`
+                } else if (hours > 24) {
+                    measurement = `yesterday`
+                } else if (days > 2) {
+                    measurement = `${Math.trunc(days)} days ago`
+                } else if (weeks > 1) {
+                    measurement = `${Math.trunc(weeks)} weeks ago`
+                } else if (years > 1) {
+                    measurement = `${Math.trunc(years)} years ago`
+                }
+
+                if (post.public_comments !== null) {
+                    post.public_comments.forEach(function(comment, i) {
+                        if (typeof comment == "string")
+                            post.public_comments[i] = JSON.parse(comment); });
+                }
+
+                // i send the get object here
+                const getObject = {
+                    caption: post.caption,
+                    file_upload: post.file_upload,
+                    user_id: post.user_id,
+                    post_id: post.post_id,
+                    users_read: post.users_read,
+                    time_stamp: post.time_stamp,
+                    comments: post.public_comments,
+                    convertedTime: measurement
+                }
+                sendArray.push(getObject)
+                // console.log(getObject)
+            }
+  
+            res.send(sendArray)
+        }
+        fetchOne();
+    } catch (error) {
+        res.status(404).json('could not GET one item!')
         return [];
     }
 });
@@ -98,7 +184,7 @@ router.post('/posts', authenticateToken, (req, res) => {
                 const timestampMilliseconds = timestamp.getTime()
 
                 const client = await pool.connect()
-                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}') RETURNING post_id;`)
+                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp, users_read) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}', '{}') RETURNING post_id;`)
                 client.release()
 
                 const postId = databaseQuery.rows[0].post_id
@@ -126,7 +212,9 @@ router.put('/posts', authenticateToken, (req, res) => {
                 const decodedUserId = res.locals.testing
                 const imageUrl = req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
                 const client = await pool.connect()
-                const result = await pool.query(`SELECT user_id FROM posts WHERE post_id = '${req.body.postId}'`)
+                const result = await pool.query(`SELECT * FROM posts WHERE post_id = '${req.body.postId}'`)
+                const databaseUpload = result.rows[0].file_upload
+                const filename = databaseUpload.split('/uploads/')[1]
                 const databaseId = result.rows[0].user_id
                 // console.log(databaseId)
                 // console.log(req.body)
@@ -135,12 +223,15 @@ router.put('/posts', authenticateToken, (req, res) => {
                 if (databaseId === decodedUserId) {
                     await client.query(`UPDATE posts SET caption = '${req.body.caption}', file_upload = '${imageUrl}' WHERE post_id = '${req.body.postId}';`)
                     client.release()
+                    fs.unlink('uploads/' + filename, (err) => {
+                        if (err) throw err;
+                    });
                     res.json({
                         status: 'post modified sucessfully'
                     })
                 } else {
                     res.status(403).json({
-                        error: error
+                        error: 'id does not match the administrator'
                     })
                 }
             } catch (error) {
@@ -150,6 +241,39 @@ router.put('/posts', authenticateToken, (req, res) => {
         }
         modifyPost()
     })
+})
+
+router.put('/posts/markAllAsRead', authenticateToken, (req, res) => {
+        async function markAllAsRead() {
+            try {
+                //this is stupid code since databaseId will always === decodedUserId - make secure
+                const decodedUserId = res.locals.testing
+                console.log('here ' + decodedUserId)
+                // const userId = req.body.userId
+                // console.log(userId)
+                const client = await pool.connect()
+                const result = await pool.query(`SELECT user_id FROM posts WHERE user_id = '${decodedUserId}'`)
+                const databaseId = result.rows[0].user_id
+
+                //database variable needs to be declared to compare decodedId
+                if (databaseId === decodedUserId) {
+                    await client.query(`UPDATE posts SET users_read = array_append(users_read,'${decodedUserId}') WHERE NOT ('${decodedUserId}' = ANY (users_read));`)
+                    client.release()
+                    res.json({
+                        status: 'added userId to all posts. Marked all as read'
+                    })
+                } else {
+                    res.status(403).json({
+                        error: error
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                res.status(404).json({error: error})
+            }
+        }
+        markAllAsRead()
+   
 })
 
 router.delete('/posts', authenticateToken, (req, res) => {

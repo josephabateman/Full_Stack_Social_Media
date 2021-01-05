@@ -10,19 +10,24 @@ router.post('/addComment', authenticateToken, (req, res) => {
     async function addComment() {
         try {
             const decodedUserId = res.locals.testing
+            const decodedFirstName = res.locals.firstName
+            const decodedLastName = res.locals.lastName
             const commentIdRandStr = randomstring.generate(16)
             // console.log(req.body.post_Id)
 
             const object = {
                 commentId: commentIdRandStr,
                 userId: decodedUserId,
+                firstName: decodedFirstName,
+                lastName: decodedLastName,
                 comment: req.body.comment,
                 postId: req.body.post_Id
             }
+            
             const objectAsString = JSON.stringify(object)
 
             const client = await pool.connect()
-            await client.query(`UPDATE posts SET testarray = array_append(testarray, '${objectAsString}') WHERE post_id = '${req.body.post_Id}';`)
+            await client.query(`UPDATE posts SET public_comments = array_append(public_comments, '${objectAsString}') WHERE post_id = '${req.body.post_Id}';`)
             const databaseQuery = await client.query(`SELECT * FROM posts WHERE post_id = '${req.body.post_Id}';`)
             client.release()
             // console.log(databaseQuery.rows)
@@ -49,6 +54,8 @@ router.delete('/deleteComment', authenticateToken, (req, res) => {
             const commentToDelete = {
                 commentId: req.body.commentId,
                 userId: req.body.userId,
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
                 comment: req.body.comment,
                 postId: req.body.postId
             }
@@ -59,7 +66,7 @@ router.delete('/deleteComment', authenticateToken, (req, res) => {
             // console.log(commentToDeleteString)
 
             const client = await pool.connect()
-            await client.query(`UPDATE posts SET testarray = array_remove(testarray, '${commentToDeleteString}');`)
+            await client.query(`UPDATE posts SET public_comments = array_remove(public_comments, '${commentToDeleteString}');`)
             client.release()
 
             res.json({
