@@ -89,7 +89,7 @@ router.get('/:id', authenticateToken, (req, res) => {
     try {
         async function fetchOne() {
             // console.log(req.params.id)
-            const decodedUserId = res.locals.testing
+            const decodedUserId = res.locals.userId
             const client = await pool.connect()
             let databaseQuery
             // this isn't very secure
@@ -178,13 +178,14 @@ router.post('/posts', authenticateToken, (req, res) => {
         }
         async function storePostInDatabase() {
             try {
+                const decodedUserId = res.locals.userId
                 const imageUrl = req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
                 const postIdRandStr = randomstring.generate(16);
                 const timestamp = new Date()
                 const timestampMilliseconds = timestamp.getTime()
 
                 const client = await pool.connect()
-                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp, users_read) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}', '{}') RETURNING post_id;`)
+                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp, users_read) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}', '{${decodedUserId}}') RETURNING post_id;`)
                 client.release()
 
                 const postId = databaseQuery.rows[0].post_id
@@ -209,7 +210,7 @@ router.put('/posts', authenticateToken, (req, res) => {
         }
         async function modifyPost() {
             try {
-                const decodedUserId = res.locals.testing
+                const decodedUserId = res.locals.userId
                 const imageUrl = req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
                 const client = await pool.connect()
                 const result = await pool.query(`SELECT * FROM posts WHERE post_id = '${req.body.postId}'`)
@@ -247,12 +248,10 @@ router.put('/posts/markAllAsRead', authenticateToken, (req, res) => {
         async function markAllAsRead() {
             try {
                 //this is stupid code since databaseId will always === decodedUserId - make secure
-                const decodedUserId = res.locals.testing
-                console.log('here ' + decodedUserId)
-                // const userId = req.body.userId
-                // console.log(userId)
+                const decodedUserId = res.locals.userId
                 const client = await pool.connect()
-                const result = await pool.query(`SELECT user_id FROM posts WHERE user_id = '${decodedUserId}'`)
+                const result = await pool.query(`SELECT user_id FROM users WHERE user_id = '${decodedUserId}'`)
+                console.log(result.rows)
                 const databaseId = result.rows[0].user_id
 
                 //database variable needs to be declared to compare decodedId
@@ -279,7 +278,7 @@ router.put('/posts/markAllAsRead', authenticateToken, (req, res) => {
 router.delete('/posts', authenticateToken, (req, res) => {
     async function deletePost() {
         try {
-            const decodedUserId = res.locals.testing
+            const decodedUserId = res.locals.userId
             const client = await pool.connect()
             const result = await client.query(`SELECT * FROM posts WHERE post_id = '${req.body.postId}'`)
             const databaseId = result.rows[0].user_id

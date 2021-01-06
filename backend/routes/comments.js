@@ -9,7 +9,7 @@ const pool = require('../functions/db-connect')
 router.post('/addComment', authenticateToken, (req, res) => {
     async function addComment() {
         try {
-            const decodedUserId = res.locals.testing
+            const decodedUserId = res.locals.userId
             const decodedFirstName = res.locals.firstName
             const decodedLastName = res.locals.lastName
             const commentIdRandStr = randomstring.generate(16)
@@ -49,7 +49,7 @@ router.delete('/deleteComment', authenticateToken, (req, res) => {
     async function deleteComment() {
         try {
             //security implementation
-            const decodedUserId = res.locals.testing
+            const decodedUserId = res.locals.userId
 
             const commentToDelete = {
                 commentId: req.body.commentId,

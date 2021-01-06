@@ -103,43 +103,96 @@ router.post('/login', (req, res) => {
     }
 })
 
+router.put('/userDetails', authenticateToken, (req, res) => {
+        async function updateUserDetails() {
+            try {
+                console.log(req.body)
+                const decodedUserId = res.locals.userId
+                const client = await pool.connect()
+                const databaseQuery = await client.query(`SELECT * FROM users WHERE user_id = '${decodedUserId}'`)
+                client.release()
+
+                const databaseUserId = databaseQuery.rows[0].user_id
+                const databasePassword = databaseQuery.rows[0].password
+
+                //database variable needs to be declared to compare decodedId
+                if (databaseUserId === decodedUserId) {
+                    bcrypt.compare(req.body.password, databasePassword).then(function (passesValidation) {
+                        if (passesValidation) {                         
+                            bcrypt.hash(req.body.newPassword, 10, async function(err, hash) {
+                                const client = await pool.connect()
+                                await client.query(`UPDATE users SET password = '${hash}', first_name = '${req.body.firstName}', last_name = '${req.body.lastName}' WHERE user_id = '${decodedUserId}';`)               
+                                client.release()
+                                res.json({
+                                    message: 'user details updated successfully'
+                                })
+                            });
+                            } else {
+                                res.status(403).json({
+                                    error: 'Password incorrect'
+                                })
+                            }
+                        })
+                  
+                } else {
+                    res.status(403).json({
+                        error: 'id does not match the administrator'
+                    })
+                }
+            } catch (error) {
+                console.log(error)
+                res.status(404).json({error: 'Something went wrong'})
+            }
+        }
+        updateUserDetails()
+})
+
 router.delete('/deleteUser', authenticateToken, (req, res) => {
     async function deleteUser() {
         try {
-
-            const decodedUserId = res.locals.testing
+            const decodedUserId = res.locals.userId
             const client = await pool.connect()
-            const result = await client.query(`SELECT * FROM users WHERE user_id = '${decodedUserId}'`)
-            const databaseId = result.rows[0].user_id
-            // console.log(decodedUserId)
-            // console.log(databaseId)
+            const databaseQuery = await client.query(`SELECT * FROM users WHERE user_id = '${decodedUserId}'`)
+            client.release()
 
-            if (databaseId === decodedUserId) {
-                const client = await pool.connect()
-                //use a join instead of three queries!
-                const databaseQuery = await client.query(`SELECT file_upload FROM posts WHERE user_id = '${decodedUserId}';`)
-                await client.query(`DELETE FROM posts WHERE user_id = '${decodedUserId}';`)
-                await client.query(`DELETE FROM users WHERE user_id = '${decodedUserId}'`)
-                client.release()
-                res.json({
-                    message: 'user account deleted successfully'
-                })
+            const databaseUserId = databaseQuery.rows[0].user_id
+            const databasePassword = databaseQuery.rows[0].password
 
-                //this gets all the filenames from database and splits off the filename, pushing to array for deletion
-                let fileUploadsArray = []
-                databaseQuery.rows.forEach(row => fileUploadsArray.push(row.file_upload.split('/uploads/')[1]))
+            if (databaseUserId === decodedUserId) {
+                bcrypt.compare(req.body.password, databasePassword).then(async function (passesValidation) {
+                    if (passesValidation) {
+                        const client = await pool.connect()
+                        //use a join instead of three queries!
+                        const databaseQuery = await client.query(`SELECT file_upload FROM posts WHERE user_id = '${decodedUserId}';`)
+                        await client.query(`DELETE FROM posts WHERE user_id = '${decodedUserId}';`)
+                        await client.query(`DELETE FROM users WHERE user_id = '${decodedUserId}'`)
+                        client.release()
+                        res.json({
+                            message: 'user account deleted successfully'
+                        })
 
-                fs.readdir('uploads/', (err, files) => {
-                    if (err) throw err;
-                    for (const file of files) {
-                        //list array matches here
-                        if(fileUploadsArray.includes(file)) {
-                            fs.unlink(path.join('uploads/', file), err => {
-                                if (err) throw err;
-                            });
-                        }
+                        //this gets all the filenames from database and splits off the filename, pushing to array for deletion
+                        let fileUploadsArray = []
+                        databaseQuery.rows.forEach(row => fileUploadsArray.push(row.file_upload.split('/uploads/')[1]))
+
+                        fs.readdir('uploads/', (err, files) => {
+                            if (err) throw err;
+                            for (const file of files) {
+                                //list array matches here
+                                if(fileUploadsArray.includes(file)) {
+                                    fs.unlink(path.join('uploads/', file), err => {
+                                        if (err) throw err;
+                                    });
+                                }
+                            }
+                        });
+                    } else {
+                        res.status(403).json({
+                            error: 'Password incorrect'
+                        })
                     }
-                });
+                })
+                
             } else {
                 res.status(403).json({
                     error: 'You are not authorised to delete this post'

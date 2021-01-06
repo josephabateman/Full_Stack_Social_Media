@@ -5,7 +5,7 @@ module.exports = async function authenticateToken(req, res, next) {
         const token = req.headers.authorization.split(' ')[1];
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         if (decodedToken) {
-            res.locals.testing = decodedToken.userId
+            res.locals.userId = decodedToken.userId
             res.locals.firstName = decodedToken.firstName
             res.locals.lastName = decodedToken.lastName
             next()
