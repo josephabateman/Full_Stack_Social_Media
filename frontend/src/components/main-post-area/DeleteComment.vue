@@ -1,6 +1,6 @@
 <template>
   <div class="delete-comment">
-    <button @click.prevent="deleteComment">x</button>
+    <b-button class="btn-sm" variant="outline-danger" @click.prevent="deleteComment">x</b-button>
     <!-- v-if="comment.userId === userId" -->
   </div>
 </template>

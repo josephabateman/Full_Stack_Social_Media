@@ -1,14 +1,15 @@
 <template>
   <div class="sidebar-left">
-    <h1>{{ msg }}</h1>
+    <b-container>
+      <b-row class="d-flex justify-content-left">
 
-    <p>Unread Posts: {{ unreadPostsNum }}</p>
-
-    <MarkAllAsRead v-on:reload="$emit('reload')" />
-
-    <GetUserPosts v-on:get-user-posts="getUserPostsToGp" />
-
-    <button @click.prevent="filterByUnread">Unread Posts</button>
+    <p class="mb-3 p-2 mb-2 bg-dark text-white rounded">Unread Posts: {{ unreadPostsNum }}</p>
+    <MarkAllAsRead v-on:reload="$emit('reload')" class="mb-3" />
+    <GetUserPosts v-on:get-user-posts="getUserPostsToGp" class="mb-3" />
+    <b-button class="mb-3" @click.prevent="filterByUnread" variant="outline-primary">Unread Posts</b-button>
+     
+      </b-row>
+    </b-container>
   </div>
 </template>
 

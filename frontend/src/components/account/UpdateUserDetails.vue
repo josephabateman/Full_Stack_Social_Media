@@ -2,27 +2,32 @@
   <div class="update-user-details">
     <h1>{{ msg }}</h1>
 
-    <form>
+  <b-button v-b-modal.modal-prevent-closing variant="outline-info">Update Account Details</b-button>
+  
+    <b-modal
+      id="modal-prevent-closing"
+      ok-title = "Submit changes"
+      ref="modal"
+      title="Update Account Details"
+      @ok="updateUserDetails"
+    >
+
+    <b-form-group>
       <label for="firstName">Change first name</label>
-      <input v-model="firstName" type="text" id="firstName" />
+      <b-form-input v-model="firstName" type="text" id="firstName" />
       <br />
 
       <label for="lastName">Change last name</label>
-      <input v-model="lastName" type="text" id="lastName" />
+      <b-form-input v-model="lastName" type="text" id="lastName" />
       <br />
 
       <label for="password">New password</label>
-      <input v-model="newPassword" type="password" id="password" />
+      <b-form-input v-model="newPassword" type="password" id="password" />
       <br />
+    </b-form-group>
+   
+    </b-modal>    
 
-      <button
-        type="submit"
-        @click.prevent="updateUserDetails"
-        class="btn btn-primary"
-      >
-        Update your details
-      </button>
-    </form>
   </div>
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="delete-account">
-    <button @click.prevent="deleteAccount">Delete Account</button>
+    <b-button @click.prevent="deleteAccount" variant="outline-danger">Delete Account</b-button>
     <h1>{{ msg }}</h1>
   </div>
 </template>
@@ -16,10 +16,10 @@ export default {
       const deletePostsToo = prompt(
         "This will also delete all your past posts. Are you sure you want to proceed? Type YES to proceed"
       );
-      const password = prompt("Please enter your account password");
 
       if (deletePostsToo === "yes" || deletePostsToo === "YES") {
         const token = JSON.parse(sessionStorage.getItem("jwt"));
+        const password = prompt("Please enter your account password");
 
         const data = {
           password: password

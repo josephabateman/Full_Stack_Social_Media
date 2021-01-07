@@ -1,6 +1,6 @@
 <template>
   <div class="get-user-posts">
-    <button @click.prevent="getUserPosts">Show My Posts</button>
+    <b-button @click.prevent="getUserPosts" variant="outline-primary">Show My Posts</b-button>
   </div>
 </template>
 

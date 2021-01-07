@@ -17,6 +17,9 @@ router.post('/signup', (req, res) => {
         const firstName = req.body.firstName
         const lastName = req.body.lastName
 
+        const capFirstName = firstName[0].toUpperCase() + firstName.substring(1);
+        const capLastName = lastName[0].toUpperCase() + lastName.substring(1);
+
         const postIdRandStr = randomstring.generate(20)
         const validEmail = validator.validate(email);
 
@@ -32,7 +35,7 @@ router.post('/signup', (req, res) => {
                 } else {
                     try {
                         const client = await pool.connect()
-                        await client.query(`INSERT INTO users (user_email, password, user_id, first_name, last_name) VALUES ('${email}', '${hash}', '${postIdRandStr}', '${firstName}', '${lastName}');`)
+                        await client.query(`INSERT INTO users (user_email, password, user_id, first_name, last_name) VALUES ('${email}', '${hash}', '${postIdRandStr}', '${capFirstName}', '${capLastName}');`)
                         client.release()
                         res.status(200).json({
                             message: 'email and password stored successfully'

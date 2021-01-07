@@ -5,9 +5,9 @@
       <router-link to="/signup">Signup</router-link>
       <router-link to="/login">Login</router-link>
 
-      <router-link to="/parent-posts-display">ParentPostsDisplay</router-link>
+      <router-link to="/parent-posts-display">Posts</router-link>
       <router-link to="/my-account">My Account</router-link>
-      <!-- <router-link to="/about">About</router-link> -->
+
     </nav>
   </div>
 </template>

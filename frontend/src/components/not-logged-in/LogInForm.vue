@@ -1,25 +1,36 @@
 <template>
   <div class="log-in-form">
     <h1>{{ msg }}</h1>
-    <form>
-      <div class="email">
-        <label for="email">Email: </label>
-        <input type="email" v-model="email" name="email" id="email" required />
-      </div>
-      <div class="password">
-        <label for="password">Password: </label>
-        <input
-          type="password"
-          v-model="password"
-          name="password"
-          id="password"
-          required
-        />
-      </div>
-      <div class="form-example">
-        <input value="Log In" type="submit" @click.prevent="login" />
-      </div>
-    </form>
+
+<b-container class="bv-example-row">
+    <b-row class="d-flex justify-content-center">
+      <b-col md="6">
+
+        <b-form class="text-md-left">
+          <div class="email mt-3">
+            <label for="email">Email: </label>
+            <b-form-input type="email" v-model="email" name="email" id="email" required />
+          </div>
+          <div class="password mt-3">
+            <label for="password">Password: </label>
+            <b-form-input
+              type="password"
+              v-model="password"
+              name="password"
+              id="password"
+              required
+            />
+          </div>
+          <b-button @click.prevent="login" variant="primary" class="mt-3">Log In</b-button>
+        </b-form>
+
+      </b-col>
+      <!-- <b-col>2 of 3</b-col>
+      <b-col>3 of 3</b-col> -->
+    </b-row>
+  </b-container>
+    
+    
   </div>
 </template>
 

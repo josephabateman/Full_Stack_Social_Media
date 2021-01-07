@@ -1,6 +1,6 @@
 <template>
   <div class="get-one">
-    <button @click.prevent="getOne">fetch one</button>
+    <b-button class="btn-sm" @click.prevent="getOne" variant="info">See all comments</b-button>
   </div>
 </template>
 

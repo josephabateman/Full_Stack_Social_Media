@@ -1,19 +1,30 @@
 <template>
   <div class="create-post">
-    <h1>{{ msg }}</h1>
-    <form enctype="multipart/form-data">
+
+    <b-button v-b-modal.modal-create-post variant="info">Create Post</b-button>
+  
+    <b-modal
+      id="modal-create-post"
+      ok-title = "Publish"
+      ref="modal"
+      title="Create Post"
+      @ok="createPost"
+    >
+
+    <b-form-group enctype="multipart/form-data">
       <label for="writeCaption">Write a caption</label>
-      <input type="text" id="writeCaption" v-model="caption" />
+      <b-input type="text" id="writeCaption" v-model="caption" />
       <br />
 
       <label for="file_to_submit">Upload a gif</label>
-      <input type="file" id="file_to_submit" />
+      <b-form-file id="file_to_submit" />
       <br />
 
-      <button type="submit" @click.prevent="createPost" class="btn btn-primary">
-        Create post
-      </button>
-    </form>
+    </b-form-group>
+   
+    </b-modal> 
+
+
   </div>
 </template>
 

@@ -1,45 +1,56 @@
 <template>
   <div class="sign-up-form">
     <h1>{{ msg }}</h1>
-    <form>
-      <div class="first-name">
-        <label for="name">First Name: </label>
-        <input
-          type="text"
-          v-model="firstName"
-          name="first-name"
-          id="first-name"
-          required
-        />
-      </div>
-      <div class="last-name">
-        <label for="first-name">Last Name: </label>
-        <input
-          type="text"
-          v-model="lastName"
-          name="last-name"
-          id="last-name"
-          required
-        />
-      </div>
-      <div class="email">
-        <label for="email">Email: </label>
-        <input type="email" v-model="email" name="email" id="email" required />
-      </div>
-      <div class="password">
-        <label for="password">Password: </label>
-        <input
-          type="password"
-          v-model="password"
-          name="password"
-          id="password"
-          required
-        />
-      </div>
-      <div class="form-example">
-        <input value="Sign Up" type="submit" @click.prevent="signup" />
-      </div>
-    </form>
+
+  <b-container class="bv-example-row">
+    <b-row class="d-flex justify-content-center">
+      <b-col md="6">
+
+        <b-form class="text-md-left">
+          <div class="first-name mt-3">
+            <label for="name">First Name: </label>
+            <b-form-input
+              type="text"
+              v-model="firstName"
+              name="first-name"
+              id="first-name"
+              required
+            />
+          </div>
+          <div class="last-name mt-3">
+            <label for="first-name">Last Name: </label>
+            <b-form-input
+              type="text"
+              v-model="lastName"
+              name="last-name"
+              id="last-name"
+              required
+            />
+          </div>
+          <div class="email mt-3">
+            <label for="email">Email: </label>
+            <b-form-input type="email" v-model="email" name="email" id="email" required />
+          </div>
+          <div class="password mt-3">
+            <label for="password">Password: </label>
+            <b-form-input
+              type="password"
+              v-model="password"
+              name="password"
+              id="password"
+              required
+            />
+          </div>
+          <b-button @click.prevent="signup" variant="primary" class="mt-3">Sign up</b-button>
+        </b-form>
+
+      </b-col>
+      <!-- <b-col>2 of 3</b-col>
+      <b-col>3 of 3</b-col> -->
+    </b-row>
+  </b-container>
+
+    
 
     <!-- <button @click="passCredentials">Emit Event</button> -->
   </div>
@@ -103,21 +114,3 @@ export default {
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
