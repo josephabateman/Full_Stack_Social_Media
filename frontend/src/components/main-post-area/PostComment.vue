@@ -3,7 +3,7 @@
     
       <b-row class="d-flex justify-content-center">
         <b-col md="9">
-          <b-input v-model="writeComment" placeholder="write a comment..." />
+          <b-input class="shadow p-3 bg-white rounded" v-model="writeComment" placeholder="write a comment..." />
         </b-col>
           <b-button class="ml-2" variant="outline-secondary" @click.prevent="postComment">+</b-button>
       </b-row>

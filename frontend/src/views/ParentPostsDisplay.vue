@@ -5,7 +5,7 @@
   <b-row>
     <b-col cols="2" class="d-none d-md-block">
       <SideBarLeft
-      class="sticky-top pt-3 bg-light"
+      class="sticky-top pt-3 shadow-sm p-3 mb-5 bg-white rounded"
       :userId="userId"
       :postArray="posts"
       v-on:reload="reload"
@@ -17,7 +17,7 @@
 
     <b-col>  
 
-      <div class="d-flex flex-row-reverse bg-light">
+      <div class="d-flex flex-row-reverse shadow-sm p-3 mb-5 bg-white rounded">
         <div class="p-2"><CreatePost :postId="postId" v-on:reload="reload" /></div>
         <div class="p-2"><Logout /></div>
       </div>
@@ -26,7 +26,7 @@
       id="get-posts-loop"
       v-for="post in posts"
       :key="post.post_id"
-      class="card mt-5 bg-light border-0"
+      class="card mt-5 border-0 shadow-lg p-3 mb-5 bg-white rounded"
     >
 
       <p id="convertedTime" class="p-2">{{ post.convertedTime }}</p>
@@ -45,7 +45,7 @@
         <!-- inner loop that prints comments  -->
 
        
-        <b-container class="card w-100 mt-3" id="comments"
+        <b-container class="card w-100 mt-3 shadow-sm bg-white rounded" id="comments"
           v-for="comment in post.comments.slice(limitCommentNumber).reverse()"
           :key="comment.commentId"
         >
