@@ -3,9 +3,9 @@
 
 <b-container class="bv-example-row">
   <b-row>
-    <b-col cols="2">
+    <b-col cols="2" class="d-none d-md-block">
       <SideBarLeft
-      class="sticky-top"
+      class="sticky-top pt-3 bg-light"
       :userId="userId"
       :postArray="posts"
       v-on:reload="reload"
@@ -17,7 +17,7 @@
 
     <b-col>  
 
-      <div class="d-flex flex-row-reverse">
+      <div class="d-flex flex-row-reverse bg-light">
         <div class="p-2"><CreatePost :postId="postId" v-on:reload="reload" /></div>
         <div class="p-2"><Logout /></div>
       </div>

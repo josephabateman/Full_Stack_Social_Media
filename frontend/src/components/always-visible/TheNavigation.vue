@@ -1,5 +1,12 @@
 <template>
   <div id="nav">
+
+    <img class="mb-3"
+      alt="Vue logo"
+      src="../../assets/Groupomania_Logos/icon-left-font.png"
+      width="300"
+    />
+
     <nav>
       <router-link to="/">Home</router-link>
       <router-link to="/signup">Signup</router-link>
