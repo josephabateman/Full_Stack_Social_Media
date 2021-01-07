@@ -67,6 +67,7 @@ export default {
           alert(jsonResponse.error);
         }
         await this.$emit("reload");
+        this.caption = ""
       }
     }
   }

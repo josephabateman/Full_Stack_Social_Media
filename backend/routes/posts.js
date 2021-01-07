@@ -5,8 +5,8 @@ const multer = require('../middleware/multer-config');
 require('dotenv').config()
 const fs = require('fs');
 const randomstring = require("randomstring");
-
 const pool = require('../functions/db-connect')
+const timeElapsed = require('../functions/time-calc')
 
 router.get('/', authenticateToken, (req, res) => {
     try {
@@ -20,40 +20,9 @@ router.get('/', authenticateToken, (req, res) => {
 
             for (post of databaseQuery.rows) {
 
-                //here is where i convert milliseconds to time elapsed since posted
-                let milliseconds = parseInt(post.time_stamp)
-                let timeNow = Date.now()
-                let difference = timeNow - milliseconds
-                let timeElapsed = new Date(difference)
-
-                const seconds = timeElapsed / 1000
-                const minutes = seconds / 60
-                const hours = minutes / 60
-                const days = hours / 24
-                const weeks = days / 30
-                const years = days / 365
-
-                //use a switch statement
-                let measurement
-                if (minutes <= 1) {
-                    measurement = `Less than a minute ago`
-                } else if (minutes > 1 && minutes < 2) {
-                    measurement = `A minute ago`
-                } else if (minutes > 2 && minutes < 60) {
-                    measurement = `${Math.round(minutes)} minutes ago`
-                } else if (minutes >= 60 && minutes < 120) {
-                    measurement = `about an hour ago`
-                } else if (minutes >= 120) {
-                    measurement = `${Math.trunc(hours)} hours ago`
-                } else if (hours > 24) {
-                    measurement = `yesterday`
-                } else if (days > 2) {
-                    measurement = `${Math.trunc(days)} days ago`
-                } else if (weeks > 1) {
-                    measurement = `${Math.trunc(weeks)} weeks ago`
-                } else if (years > 1) {
-                    measurement = `${Math.trunc(years)} years ago`
-                }
+               //here is where i convert milliseconds to time elapsed since posted
+                const timeStamp = post.time_stamp
+                let measurement = timeElapsed(timeStamp)
 
                 if (post.public_comments !== null) {
                     post.public_comments.forEach(function(comment, i) {
@@ -105,40 +74,8 @@ router.get('/:id', authenticateToken, (req, res) => {
 
             for (post of databaseQuery.rows) {
 
-                //here is where i convert milliseconds to time elapsed since posted
-                let milliseconds = parseInt(post.time_stamp)
-                let timeNow = Date.now()
-                let difference = timeNow - milliseconds
-                let timeElapsed = new Date(difference)
-
-                const seconds = timeElapsed / 1000
-                const minutes = seconds / 60
-                const hours = minutes / 60
-                const days = hours / 24
-                const weeks = days / 30
-                const years = days / 365
-
-                //use a switch statement
-                let measurement
-                if (minutes <= 1) {
-                    measurement = `Less than a minute ago`
-                } else if (minutes > 1 && minutes < 2) {
-                    measurement = `A minute ago`
-                } else if (minutes > 2 && minutes < 60) {
-                    measurement = `${Math.round(minutes)} minutes ago`
-                } else if (minutes >= 60 && minutes < 120) {
-                    measurement = `about an hour ago`
-                } else if (minutes >= 120) {
-                    measurement = `${Math.trunc(hours)} hours ago`
-                } else if (hours > 24) {
-                    measurement = `yesterday`
-                } else if (days > 2) {
-                    measurement = `${Math.trunc(days)} days ago`
-                } else if (weeks > 1) {
-                    measurement = `${Math.trunc(weeks)} weeks ago`
-                } else if (years > 1) {
-                    measurement = `${Math.trunc(years)} years ago`
-                }
+                const timeStamp = post.time_stamp
+                let measurement = timeElapsed(timeStamp)
 
                 if (post.public_comments !== null) {
                     post.public_comments.forEach(function(comment, i) {
@@ -185,7 +122,7 @@ router.post('/posts', authenticateToken, (req, res) => {
                 const timestampMilliseconds = timestamp.getTime()
 
                 const client = await pool.connect()
-                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp, users_read) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}', '{${decodedUserId}}') RETURNING post_id;`)
+                const databaseQuery = await client.query(`INSERT INTO posts (caption, user_id, file_upload, post_id, time_stamp, users_read, public_comments) VALUES ('${req.body.caption}', '${req.body.userId}', '${imageUrl}', '${postIdRandStr}', '${timestampMilliseconds}', '{${decodedUserId}}', '{}') RETURNING post_id;`)
                 client.release()
 
                 const postId = databaseQuery.rows[0].post_id

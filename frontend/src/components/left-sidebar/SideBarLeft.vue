@@ -3,10 +3,11 @@
     <b-container>
       <b-row class="d-flex justify-content-left">
 
-    <p class="mb-3 p-2 mb-2 bg-dark text-white rounded">Unread Posts: {{ unreadPostsNum }}</p>
-    <MarkAllAsRead v-on:reload="$emit('reload')" class="mb-3" />
-    <GetUserPosts v-on:get-user-posts="getUserPostsToGp" class="mb-3" />
-    <b-button class="mb-3" @click.prevent="filterByUnread" variant="outline-primary">Unread Posts</b-button>
+    <p class="mb-3 p-2 mb-3 bg-secondary text-white rounded" style="cursor:default">Unread Posts: {{ unreadPostsNum }}</p>
+    <MarkAllAsRead class="mb-3" v-on:reload="$emit('reload')" />
+    <GetUserPosts class="mb-3" v-on:get-user-posts="getUserPostsToGp" />
+    <b-button class="mb-3 p-2" variant="outline-info" @click.prevent="filterByUnread">Unread Posts</b-button>
+    <b-button class="mb-3" variant="outline-info" @click.prevent="$emit('reload')">Show all posts</b-button>
      
       </b-row>
     </b-container>
@@ -59,7 +60,7 @@ export default {
       }
     },
     filterByUnread() {
-      this.$emit("filtered-by-unread", this.filteredByUnread);
+      this.$emit("filter-by-unread", this.filteredByUnread);
     }
   }
 };

@@ -11,7 +11,6 @@
       v-on:reload="reload"
       v-on:get-user-posts-to-gp="displayUserPosts"
       v-on:filter-by-unread="filterByUnread"
-      v-on:filtered-by-unread="filterByUnread"
     />
     </b-col>
 
@@ -136,13 +135,18 @@ export default {
     },
     reload() {
       this.fetchPosts();
+      this.writeComment = ""
+      this.modifyCaption = ""
     },
     displayUserPosts(payload) {
       this.posts = payload;
+      console.log(payload)
+      this.fetchPosts()
     },
     filterByUnread(payload) {
-      console.log("filtered by unread");
-      // would be more efficient to just get by index than an array
+      if (payload.length === 0) {
+        alert('You have no unread posts')
+      }
       this.posts = payload;
     },
     displayGetOne(payload) {

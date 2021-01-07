@@ -5,7 +5,7 @@
       src="../assets/Groupomania_Logos/icon.png"
       width="300"
     />
-    <HomeInfo msg="Groupmania - the social network" />
+    <HomeInfo msg="Groupomania - the social network" />
   </div>
 </template>
 

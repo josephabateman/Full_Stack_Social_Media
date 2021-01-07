@@ -1,6 +1,6 @@
 <template>
   <div class="mark-all-as-read">
-    <b-button @click.prevent="markAllAsRead" variant="outline-primary">Mark all as read</b-button>
+    <b-button @click.prevent="markAllAsRead" variant="outline-info">Mark all read</b-button>
   </div>
 </template>
 
