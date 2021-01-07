@@ -12,30 +12,27 @@ export default {
     postArray: Array
   },
   data() {
-    return {
-       
-    };
+    return {};
   },
   methods: {
     getUserPosts: async function() {
       const token = JSON.parse(sessionStorage.getItem("jwt"));
 
       const options = {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            };
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
 
-//make more secure
+      //make more secure
       const response = await fetch(`http://localhost:5001/userId`, options);
       const jsonDataUserPosts = await response.json();
       if (jsonDataUserPosts.error) {
-                alert(jsonDataUserPosts.error)
-            }
-        this.$emit('get-user-posts', jsonDataUserPosts)
+        alert(jsonDataUserPosts.error);
+      }
+      this.$emit("get-user-posts", jsonDataUserPosts);
     }
   }
- 
 };
 </script>

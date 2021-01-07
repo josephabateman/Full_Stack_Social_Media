@@ -1,50 +1,71 @@
 <template>
   <div class="parent-posts-display">
-
- <SideBarLeft :userId="userId" :postArray="posts"
-    v-on:reload="reload" v-on:get-user-posts-to-gp="displayUserPosts" 
-    v-on:filter-by-unread="filterByUnread"
-    v-on:filtered-by-unread="filterByUnread" msg="sidebar left"/>
-
-<div id="get-posts-loop"
-    v-for="post in posts"
-    :key="post.post_id"
-    class="card mt-5 bg-light border-0"
-  >
-
-    <p id="convertedTime" class="p-2">{{ post.convertedTime }}</p>
-    <h2 id="postCaption" class="p-2">{{ post.caption }}</h2>
-    <img
-      id="fileUploadImage"
-      :src="post.file_upload"
-      alt=""
-      class="mx-auto d-block img-fluid width: 100%"
+    <SideBarLeft
+      :userId="userId"
+      :postArray="posts"
+      v-on:reload="reload"
+      v-on:get-user-posts-to-gp="displayUserPosts"
+      v-on:filter-by-unread="filterByUnread"
+      v-on:filtered-by-unread="filterByUnread"
+      msg="sidebar left"
     />
 
-<div :id="post.post_id">
-    <PostComment :postId="post.post_id" v-on:reload="reload" />
+    <div
+      id="get-posts-loop"
+      v-for="post in posts"
+      :key="post.post_id"
+      class="card mt-5 bg-light border-0"
+    >
+      <p id="convertedTime" class="p-2">{{ post.convertedTime }}</p>
+      <h2 id="postCaption" class="p-2">{{ post.caption }}</h2>
+      <img
+        id="fileUploadImage"
+        :src="post.file_upload"
+        alt=""
+        class="mx-auto d-block img-fluid width: 100%"
+      />
 
-<!-- inner loop that prints comments  -->
-<div v-for="comment in post.comments" :key="comment.commentId" class="card">
-      <p>{{ comment.firstName }} {{ comment.lastName }}: {{ comment.comment }}</p>
-      
-<!-- comment delete button (this is inside the nested loop) -->
-  <DeleteComment :commentId="comment.commentId" :postArray="posts" v-on:reload="reload" />
-</div>
+      <div :id="post.post_id">
+        <PostComment :postId="post.post_id" v-on:reload="reload" />
 
-  <ModifyPost :postId="post.post_id" v-on:reload="reload" msg="modify post"/>
-  <DeletePost :postId="post.post_id" v-on:reload="reload" />
-  
-   <!-- v-if="userId === post.userId" -->
-    
-</div>
+        <!-- inner loop that prints comments  -->
+        <div
+          v-for="comment in post.comments"
+          :key="comment.commentId"
+          class="card"
+        >
+          <p>
+            {{ comment.firstName }} {{ comment.lastName }}:
+            {{ comment.comment }}
+          </p>
 
-  <GetOne :postId="post.post_id" v-on:reload="reload" v-on:fetch-one-response="displayGetOne" />
-</div>
+          <!-- comment delete button (this is inside the nested loop) -->
+          <DeleteComment
+            :commentId="comment.commentId"
+            :postArray="posts"
+            v-on:reload="reload"
+          />
+        </div>
 
-  <!-- outside of loop -->
-  <CreatePost :postId=postId v-on:reload="reload" msg="create post"/>
+        <ModifyPost
+          :postId="post.post_id"
+          v-on:reload="reload"
+          msg="modify post"
+        />
+        <DeletePost :postId="post.post_id" v-on:reload="reload" />
 
+        <!-- v-if="userId === post.userId" -->
+      </div>
+
+      <GetOne
+        :postId="post.post_id"
+        v-on:reload="reload"
+        v-on:fetch-one-response="displayGetOne"
+      />
+    </div>
+
+    <!-- outside of loop -->
+    <CreatePost :postId="postId" v-on:reload="reload" msg="create post" />
   </div>
 </template>
 
@@ -68,20 +89,20 @@ export default {
     PostComment,
     DeleteComment,
     DeletePost,
-    ModifyPost,
-},
+    ModifyPost
+  },
   data() {
     return {
       posts: [],
-      userId: '',
-      postId: '',
-      writeComment: '',
-      modifyCaption: ''
-    }
+      userId: "",
+      postId: "",
+      writeComment: "",
+      modifyCaption: ""
+    };
   },
   mounted() {
     this.fetchPosts();
-    this.userId = JSON.parse(sessionStorage.getItem("userId"))
+    this.userId = JSON.parse(sessionStorage.getItem("userId"));
   },
   methods: {
     fetchPosts: async function() {
@@ -98,18 +119,18 @@ export default {
       this.posts = await jsonData;
     },
     reload() {
-      this.fetchPosts()
+      this.fetchPosts();
     },
     displayUserPosts(payload) {
-      this.posts = payload
+      this.posts = payload;
     },
     filterByUnread(payload) {
-      console.log('filtered by unread')
+      console.log("filtered by unread");
       // would be more efficient to just get by index than an array
-      this.posts = payload
+      this.posts = payload;
     },
     displayGetOne(payload) {
-      this.posts = payload
+      this.posts = payload;
     }
   }
 };

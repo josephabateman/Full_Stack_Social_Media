@@ -62,7 +62,12 @@ export default {
   methods: {
     signup: async function() {
       //basic validation
-      if (this.email === "" || this.password === "" || this.firstName === "" || this.lastName === "") {
+      if (
+        this.email === "" ||
+        this.password === "" ||
+        this.firstName === "" ||
+        this.lastName === ""
+      ) {
         alert("Please complete all fields");
         return;
       }
@@ -74,7 +79,7 @@ export default {
           firstName: this.firstName,
           lastName: this.lastName
         };
-        
+
         const options = {
           method: "POST",
           headers: {
@@ -89,7 +94,7 @@ export default {
           alert(response.error);
         } else {
           alert("successfully signed up");
-          this.$emit("pass-credentials", {...data});
+          this.$emit("pass-credentials", { ...data });
         }
       } catch (error) {
         console.log(error);

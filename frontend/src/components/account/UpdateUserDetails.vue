@@ -1,27 +1,28 @@
 <template>
-
   <div class="update-user-details">
+    <h1>{{ msg }}</h1>
 
-      <h1>{{ msg }}</h1>
-      
-      <form>
+    <form>
+      <label for="firstName">Change first name</label>
+      <input v-model="firstName" type="text" id="firstName" />
+      <br />
 
-            <label for="firstName">Change first name</label>
-            <input v-model="firstName" type="text" id="firstName">
-            <br>
+      <label for="lastName">Change last name</label>
+      <input v-model="lastName" type="text" id="lastName" />
+      <br />
 
-            <label for="lastName">Change last name</label>
-            <input v-model="lastName" type="text" id="lastName">
-            <br>
+      <label for="password">New password</label>
+      <input v-model="newPassword" type="password" id="password" />
+      <br />
 
-            <label for="password">New password</label>
-            <input v-model="newPassword" type="password" id="password">
-            <br>
-
-            <button type="submit" @click.prevent="updateUserDetails"
-                    class="btn btn-primary">Update your details</button>
-        </form>
-
+      <button
+        type="submit"
+        @click.prevent="updateUserDetails"
+        class="btn btn-primary"
+      >
+        Update your details
+      </button>
+    </form>
   </div>
 </template>
 
@@ -33,39 +34,38 @@ export default {
   },
   data() {
     return {
-      firstName: '',
-      lastName: '',
-      newPassword: ''
-    }
+      firstName: "",
+      lastName: "",
+      newPassword: ""
+    };
   },
   methods: {
-    updateUserDetails: async function () {
-      const password = prompt('Please enter your account password')
+    updateUserDetails: async function() {
+      const password = prompt("Please enter your account password");
 
-      const token = JSON.parse(sessionStorage.getItem('jwt'))
+      const token = JSON.parse(sessionStorage.getItem("jwt"));
 
       const data = {
         password: password,
         firstName: this.firstName,
         lastName: this.lastName,
         newPassword: this.newPassword
-      }
-      const options = {
-          method: 'PUT',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(data)
       };
-      const request = await fetch('http://localhost:5001/userDetails', options)
-      const jsonResponse = await request.json()
+      const options = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+      };
+      const request = await fetch("http://localhost:5001/userDetails", options);
+      const jsonResponse = await request.json();
       if (jsonResponse.error) {
-          alert(jsonResponse.error)
+        alert(jsonResponse.error);
       } else {
-          alert(jsonResponse.message)
+        alert(jsonResponse.message);
       }
-
     }
   }
 };

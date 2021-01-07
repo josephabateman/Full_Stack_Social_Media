@@ -1,5 +1,5 @@
 run 'nodemon server' on backend
-run 'vue ui' on frontend
+run 'npm run serve' on frontend
 
 Layout of postgres DB:
 

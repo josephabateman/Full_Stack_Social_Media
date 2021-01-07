@@ -7,11 +7,11 @@
   </div>
 </template>
 <script>
-
 import TheNavigation from "@/components/always-visible/TheNavigation";
 import Logout from "@/components/always-visible/Logout";
 
 export default {
+  name: "App",
   components: {
     TheNavigation,
     Logout

@@ -12,14 +12,12 @@ export default {
     postId: String
   },
   data() {
-    return {
-       
-    };
+    return {};
   },
   methods: {
     getOne: async function() {
       const token = JSON.parse(sessionStorage.getItem("jwt"));
-      const id = this.postId
+      const id = this.postId;
       const options = {
         method: "GET",
         headers: {
@@ -31,10 +29,9 @@ export default {
 
       this.fetchOneResult = jsonDataFetchOne;
       // console.log(this.fetchOneResult)
-      this.$emit('fetch-one-response', jsonDataFetchOne)
+      this.$emit("fetch-one-response", jsonDataFetchOne);
     }
   }
- 
 };
 </script>
 

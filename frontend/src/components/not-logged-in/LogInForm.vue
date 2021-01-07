@@ -69,7 +69,7 @@ export default {
           this.userId = parsedUserId;
 
           // await this.fetchPosts()
-          window.location.href = '/#/parent-posts-display';
+          window.location.href = "/#/parent-posts-display";
           //redirect to logged in home page
         }
       } catch (error) {

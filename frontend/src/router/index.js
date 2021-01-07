@@ -23,7 +23,9 @@ const routes = [
     path: "/parent-posts-display",
     name: "ParentPostsDisplay",
     component: () =>
-      import(/* webpackChunkName: "parent-posts-display" */ "../views/ParentPostsDisplay.vue")
+      import(
+        /* webpackChunkName: "parent-posts-display" */ "../views/ParentPostsDisplay.vue"
+      )
   },
   {
     path: "/my-account",
