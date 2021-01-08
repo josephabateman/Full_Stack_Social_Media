@@ -31,6 +31,14 @@ const routes = [
       )
   },
   {
+    path: "/individual-post",
+    name: "IndividualPost",
+    component: () =>
+      import(
+        /* webpackChunkName: "individual-post" */ "../views/IndividualPost.vue"
+      )
+  },
+  {
     path: "/my-account",
     name: "MyAccount",
     component: () =>

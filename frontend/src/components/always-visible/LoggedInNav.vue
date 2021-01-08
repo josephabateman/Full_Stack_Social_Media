@@ -1,16 +1,24 @@
 <template>
   <div id="nav">
 
-    <img class="mb-3"
-      alt="Vue logo"
-      src="../../assets/Groupomania_Logos/icon-left-font.png"
-      width="300"
-    />
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 d-flex justify-content-start">
+          <img class="mb-3"
+            alt="Vue logo"
+            src="../../assets/Groupomania_Logos/icon-left-font.png"
+            width="300"
+          />
+        </div>
+        <div class="col-md d-flex justify-content-end">
+           <nav>
+            <router-link to="/parent-posts-display">Posts</router-link>
+            <router-link to="/my-account">My Account</router-link>         
+          </nav>
+        </div>
+      </div>
+    </div>
 
-    <nav>
-      <router-link to="/parent-posts-display">Posts</router-link>
-      <router-link to="/my-account">My Account</router-link>
-    </nav>
   </div>
 </template>
 

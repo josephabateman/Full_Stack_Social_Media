@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-    <LoggedInNav v-if="loggedIn" />
-    <LoggedOutNav v-if="!loggedIn" />
-    <router-view v-on:show-not-logged-in-nav="logoutFunc" v-on:show-logged-in-nav="loginFunc" />
+    <LoggedInNav v-if="loggedIn" :key="loggedIn" />
+    <LoggedOutNav v-if="!loggedIn" :key="loggedIn" />   
+    <router-view v-on:show-logged-in-nav="switchNav" v-on:show-not-logged-in-nav="switchNav" />
+
   </div>
 </template>
 <script>
@@ -21,11 +22,12 @@ export default {
     }
   },
   methods: {
-    logoutFunc() {
-      this.loggedIn = false
-    },
-    loginFunc() {
-      this.loggedIn = true
+    switchNav() {
+      if (sessionStorage.getItem("loggedIn") === 'true') {
+        this.loggedIn = true
+      } else {
+         this.loggedIn = false
+      }
     }
   }
 };

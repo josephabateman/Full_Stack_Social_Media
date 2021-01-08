@@ -2,6 +2,12 @@
   <div class="parent-posts-display">
 
 <b-container class="bv-example-row">
+
+  <div class="col-md d-flex justify-content-end">
+    <CreatePost class="mr-2" />
+    <Logout />
+  </div>
+
   <b-row>
     <b-col cols="3" class="d-none d-md-block">
       <SideBarLeft
@@ -19,10 +25,10 @@
       
     </b-col> -->
 
-      <div class="d-flex flex-row-reverse shadow-sm p-3 mb-5 bg-white rounded">
-        <div class="p-2"><CreatePost :postId="postId" v-on:reload="reload" /></div>
-        <div class="p-2"><Logout v-on:show-not-logged-in-nav="$emit('show-not-logged-in-nav')" /></div>
-      </div>
+      <!-- <div class="d-flex flex-row-reverse shadow-sm p-3 mb-5 bg-white rounded">
+        <div class="p-2"><CreatePost v-on:reload="reload" /></div>
+        <div class="p-2"><Logout /></div>
+      </div> -->
 
       <SideBarLeft
           class="d-md-none"
@@ -72,15 +78,15 @@
           </b-row>
         </b-container>
 
+        <!-- <GetOne :postId="post.post_id" v-on:reload="reload" v-on:fetch-one-response="displayGetOne" /> -->
         <div class="d-flex justify-content-center mt-3">
-            <div class="p-2"><GetOne :postId="post.post_id" v-on:reload="reload" v-on:fetch-one-response="displayGetOne" /></div>
+            <div class="p-2"><b-button :id="post.post_id" variant="info" class="btn-sm" @click="displayGetOne">Expand post</b-button></div>
             <div v-if="userId === post.user_id" class="p-2"><UserOptions :postId="post.post_id" v-on:reload="reload" /></div>
         </div>
         
       </div>
 
     </div>
-    <button @click.prevent="sortPosts">time stamp</button>
     <!-- outside of loop -->
 
     </b-col>
@@ -94,14 +100,10 @@
 // @ is an alias to /src
 import CreatePost from "@/components/main-post-area/CreatePost.vue";
 import Logout from "@/components/main-post-area/Logout.vue";
-import GetOne from "@/components/main-post-area/GetOne.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
 import SideBarLeft from "@/components/left-sidebar/SideBarLeft.vue";
-// import DeletePost from "@/components/main-post-area/DeletePost.vue";
-// import ModifyPost from "@/components/main-post-area/ModifyPost.vue";
 import UserOptions from "@/components/main-post-area/user-options/UserOptions.vue";
-
 
 export default {
   name: "ParentPostsDisplay",
@@ -109,13 +111,10 @@ export default {
   components: {
     CreatePost,
     Logout,
-    GetOne,
     SideBarLeft,
     PostComment,
     DeleteComment,
     UserOptions
-    // DeletePost,
-    // ModifyPost
   },
   data() {
     return {
@@ -159,10 +158,14 @@ export default {
       }
       this.posts = payload;
     },
-    displayGetOne(payload) {
-      this.posts = payload;
-      this.limitCommentNumber = 0
+    displayGetOne() {
+      const postId = event.target.id
+      this.$router.push({ name: 'IndividualPost', query: { post: postId } })
     }
+    // displayGetOne(payload) {
+    //   this.posts = payload;
+    //   this.limitCommentNumber = 0
+    // }
   }
 };
 </script>

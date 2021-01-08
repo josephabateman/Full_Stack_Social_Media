@@ -1,7 +1,7 @@
 <template>
   <div class="create-post">
 
-    <b-button v-b-modal.modal-create-post variant="info">Create Post</b-button>
+    <b-button v-b-modal.modal-create-post class="btn btn-light">Create Post</b-button>
   
     <b-modal
       id="modal-create-post"

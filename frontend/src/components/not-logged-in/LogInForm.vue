@@ -75,7 +75,9 @@ export default {
           // change from user id to something else
           const parsedUserId = JSON.parse(sessionStorage.getItem("userId"));
           this.userId = parsedUserId;
-
+          
+          sessionStorage.setItem("loggedIn", 'true');
+          // location.reload()
           this.$emit('show-logged-in-nav')
 
           //redirect to logged in home page

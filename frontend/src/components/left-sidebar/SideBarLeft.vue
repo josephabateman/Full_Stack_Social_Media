@@ -6,8 +6,8 @@
     <p class="p-2 m-2 bg-secondary text-white rounded" style="cursor:default">{{ unreadPostsNum }} Unread Posts</p>
     <MarkAllAsRead class="m-2" v-on:reload="$emit('reload')" />
     <GetUserPosts class="m-2" v-on:get-user-posts="getUserPostsToGp" />
-    <b-button class="m-2" variant="outline-info" @click.prevent="filterByUnread">Unread Posts</b-button>
-    <b-button class="m-2" variant="outline-info" @click.prevent="$emit('reload')">Show all posts</b-button>
+    <b-button class="m-2 btn btn-light" @click.prevent="filterByUnread">Unread Posts</b-button>
+    <b-button class="m-2 btn btn-light" @click.prevent="$emit('reload')">Show all posts</b-button>
      
       </b-row>
     </b-container>

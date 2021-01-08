@@ -19,9 +19,9 @@ module.exports = function timeElapsed(timeStamp) {
         measurement = `A minute ago`
     } else if (minutes > 2 && minutes < 60) {
         measurement = `${Math.round(minutes)} minutes ago`
-    } else if (minutes >= 60 && minutes < 120) {
+    } else if (minutes >= 60 && hours < 2) {
         measurement = `about an hour ago`
-    } else if (minutes >= 120 && minutes < 24) {
+    } else if (hours >= 2 && hours < 24) {
         measurement = `${Math.trunc(hours)} hours ago`
     } else if (hours >= 24 && days < 2) {
         measurement = `yesterday`
