@@ -12,7 +12,7 @@ router.get('/', authenticateToken, (req, res) => {
     try {
         async function displayPosts() {
             const client = await pool.connect()
-            const databaseQuery = await client.query("SELECT * FROM posts");
+            const databaseQuery = await client.query("SELECT * FROM posts ORDER BY time_stamp DESC");
             client.release()
             // console.log(databaseQuery.rows)
             const sendArray = []
@@ -45,7 +45,7 @@ router.get('/', authenticateToken, (req, res) => {
                 // console.log(getObject)
             }
             // console.log(...databaseQuery.rows)
-            res.send(sendArray.reverse())
+            res.send(sendArray)
         }
         displayPosts();
     } catch (error) {
@@ -63,9 +63,9 @@ router.get('/:id', authenticateToken, (req, res) => {
             let databaseQuery
             // this isn't very secure
             if (req.params.id === 'userId') {
-                databaseQuery = await pool.query(`SELECT * FROM posts WHERE user_id = '${decodedUserId}'`)
+                databaseQuery = await pool.query(`SELECT * FROM posts WHERE user_id = '${decodedUserId}' ORDER BY time_stamp DESC`)
             } else {
-                databaseQuery = await client.query(`SELECT * FROM posts WHERE post_id = '${req.params.id}' LIMIT 1;`);
+                databaseQuery = await client.query(`SELECT * FROM posts WHERE post_id = '${req.params.id}' ORDER BY time_stamp DESC LIMIT 1;`);
             }
             client.release()
             // console.log(databaseQuery.rows)

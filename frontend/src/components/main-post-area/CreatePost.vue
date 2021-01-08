@@ -41,6 +41,7 @@ export default {
   },
   methods: {
     createPost: async function() {
+      // this.$emit("reload");
       const token = JSON.parse(sessionStorage.getItem("jwt"));
       const userId = JSON.parse(sessionStorage.getItem("userId"));
 

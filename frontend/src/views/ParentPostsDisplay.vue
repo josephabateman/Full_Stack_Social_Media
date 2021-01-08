@@ -3,9 +3,9 @@
 
 <b-container class="bv-example-row">
   <b-row>
-    <b-col cols="2" class="d-none d-md-block">
+    <b-col cols="3" class="d-none d-md-block">
       <SideBarLeft
-      class="sticky-top pt-3 shadow-sm p-3 mb-5 bg-white rounded"
+      class="sticky-top p-3 shadow-sm bg-white rounded"
       :userId="userId"
       :postArray="posts"
       v-on:reload="reload"
@@ -15,11 +15,23 @@
     </b-col>
 
     <b-col>  
+      <!-- <b-col class="d-md-none d-flex justify-content-center">
+      
+    </b-col> -->
 
       <div class="d-flex flex-row-reverse shadow-sm p-3 mb-5 bg-white rounded">
         <div class="p-2"><CreatePost :postId="postId" v-on:reload="reload" /></div>
-        <div class="p-2"><Logout /></div>
+        <div class="p-2"><Logout v-on:show-not-logged-in-nav="$emit('show-not-logged-in-nav')" /></div>
       </div>
+
+      <SideBarLeft
+          class="d-md-none"
+          :userId="userId"
+          :postArray="posts"
+          v-on:reload="reload"
+          v-on:get-user-posts-to-gp="displayUserPosts"
+          v-on:filter-by-unread="filterByUnread"
+        />
     
       <div
       id="get-posts-loop"
@@ -68,7 +80,7 @@
       </div>
 
     </div>
-
+    <button @click.prevent="sortPosts">time stamp</button>
     <!-- outside of loop -->
 
     </b-col>
@@ -140,8 +152,6 @@ export default {
     },
     displayUserPosts(payload) {
       this.posts = payload;
-      console.log(payload)
-      this.fetchPosts()
     },
     filterByUnread(payload) {
       if (payload.length === 0) {

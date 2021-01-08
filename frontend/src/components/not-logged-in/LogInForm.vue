@@ -71,17 +71,15 @@ export default {
         if (response.token !== undefined) {
           sessionStorage.setItem("jwt", JSON.stringify(response.token));
           sessionStorage.setItem("userId", JSON.stringify(response.userId));
-          // this.email = ''
-          // this.password = ''
-          // this.loggedIn = true
 
           // change from user id to something else
           const parsedUserId = JSON.parse(sessionStorage.getItem("userId"));
           this.userId = parsedUserId;
 
-          // await this.fetchPosts()
-          window.location.href = "/#/parent-posts-display";
+          this.$emit('show-logged-in-nav')
+
           //redirect to logged in home page
+          this.$router.push({ name: 'ParentPostsDisplay' })
         }
       } catch (error) {
         console.log(error);

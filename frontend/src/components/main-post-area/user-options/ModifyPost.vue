@@ -42,6 +42,7 @@ export default {
   },
   methods: {
     modifyPost: async function() {
+      // this.$emit("reload");
       const token = JSON.parse(sessionStorage.getItem("jwt"));
       const caption = this.caption;
       const file = document.getElementById("modify_file_to_submit").files[0];

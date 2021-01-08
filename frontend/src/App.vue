@@ -1,18 +1,32 @@
 <template>
   <div id="app">
-    <TheNavigation />
-    
-    <router-view />
-    <!-- <p>always see</p> -->
+    <LoggedInNav v-if="loggedIn" />
+    <LoggedOutNav v-if="!loggedIn" />
+    <router-view v-on:show-not-logged-in-nav="logoutFunc" v-on:show-logged-in-nav="loginFunc" />
   </div>
 </template>
 <script>
-import TheNavigation from "@/components/always-visible/TheNavigation";
+import LoggedInNav from "@/components/always-visible/LoggedInNav";
+import LoggedOutNav from "@/components/always-visible/LoggedOutNav";
 
 export default {
   name: "App",
   components: {
-    TheNavigation
+    LoggedInNav,
+    LoggedOutNav
+  },
+  data() {
+    return {
+      loggedIn: false
+    }
+  },
+  methods: {
+    logoutFunc() {
+      this.loggedIn = false
+    },
+    loginFunc() {
+      this.loggedIn = true
+    }
   }
 };
 </script>

@@ -13,6 +13,7 @@ export default {
       sessionStorage.removeItem("jwt");
       // vue router redirect is not working
       window.location.href = "/";
+      this.$emit('show-not-logged-in-nav')
       console.log("logged out");
     }
   }

@@ -11,10 +11,6 @@
       <router-link to="/">Home</router-link>
       <router-link to="/signup">Signup</router-link>
       <router-link to="/login">Login</router-link>
-
-      <router-link to="/parent-posts-display">Posts</router-link>
-      <router-link to="/my-account">My Account</router-link>
-
     </nav>
   </div>
 </template>

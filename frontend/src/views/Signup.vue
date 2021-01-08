@@ -41,10 +41,8 @@ export default {
           const parsedUserId = JSON.parse(sessionStorage.getItem("userId"));
           this.userId = parsedUserId;
 
-          // await this.fetchPosts()
-          alert("successfully logged in");
-
-          //redirect to logged in home page
+           //redirect to logged in home page
+          this.$router.push({ name: 'ParentPostsDisplay' })
         }
       } catch (error) {
         console.log(error);

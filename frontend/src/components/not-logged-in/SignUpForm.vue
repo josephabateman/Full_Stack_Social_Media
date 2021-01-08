@@ -104,7 +104,6 @@ export default {
         if (response.error) {
           alert(response.error);
         } else {
-          alert("successfully signed up");
           this.$emit("pass-credentials", { ...data });
         }
       } catch (error) {
