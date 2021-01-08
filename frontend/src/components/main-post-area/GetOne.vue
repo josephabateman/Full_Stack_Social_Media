@@ -36,7 +36,7 @@
       </div>
     </b-col>
    
-    <b-col cols="5">
+    <b-col cols="lg-5">
         <div v-for="post in onePost" :key="post.post_id">
           <b-container class="card w-100 mt-3 shadow-sm bg-white rounded" id="comments"
           v-for="comment in post.comments.slice(0).reverse()"
