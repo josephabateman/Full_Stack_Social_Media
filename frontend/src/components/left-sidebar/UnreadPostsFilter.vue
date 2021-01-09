@@ -1,7 +1,5 @@
 <template>
-  <div class="sidebar-left">
-    <b-container>
-      <b-row class="d-flex flex-row-reverse justify-content-left">
+  <div class="unread-posts-filter">
 
           <b-alert
             :show="dismissCountDown"
@@ -21,7 +19,7 @@
           </b-alert>
 
        <!-- show if unread posts -->
-          <button v-if="unreadPostsNum>=1" @click.prevent="filterByUnread" class="m-2 btn btn-outline-primary">
+          <button v-if="unreadPostsNum>=1" @click.prevent="filterByUnread" class="btn btn-outline-primary border-0 mb-2 float-left">
             {{ unreadPostsNum }} unread
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
               <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
@@ -37,27 +35,24 @@
             </svg>
           </p>   
 
-    <CreatePost class="mt-2" v-on:reload="reload" />
-    <MarkAllAsRead class="m-2" v-on:reload="$emit('reload')" />
-    <GetUserPosts class="m-2" v-on:get-user-posts="getUserPostsToGp" />
-    <b-button class="m-2 btn btn-light" @click.prevent="$emit('reload')">Show all posts</b-button>
-     
-      </b-row>
-    </b-container>
+    <b-button class="btn btn-light float-left d-none d-md-block" @click.prevent="$emit('reload')">Show all posts</b-button>
+
+    
+  
   </div>
 </template>
 
 <script>
-import MarkAllAsRead from "@/components/left-sidebar/MarkAllAsRead.vue";
-import GetUserPosts from "@/components/left-sidebar/GetUserPosts.vue";
-import CreatePost from "@/components/main-post-area/CreatePost.vue";
+// import MarkAllAsRead from "@/components/left-sidebar/MarkAllAsRead.vue";
+// import GetUserPosts from "@/components/left-sidebar/GetUserPosts.vue";
+// import CreatePost from "@/components/main-post-area/CreatePost.vue";
 
 export default {
-  name: "SideBarLeft",
+  name: "UnreadPostsFilter",
   components: {
-    MarkAllAsRead,
-    GetUserPosts,
-    CreatePost
+    // MarkAllAsRead,
+    // GetUserPosts,
+    // CreatePost
   },
   data() {
     return {
@@ -97,6 +92,7 @@ export default {
         const usersReadArray = post.users_read;
         if (!usersReadArray.includes(this.userId)) {
           this.unreadPostsNum += 1;
+          // this.$emit('unread-number', this.unreadPostsNum)
           this.filteredByUnread = this.postArray.filter(
             post => !post.users_read.includes(this.userId)
           );

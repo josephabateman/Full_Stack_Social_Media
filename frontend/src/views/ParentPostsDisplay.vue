@@ -1,11 +1,22 @@
 <template>
   <div class="parent-posts-display">
 
-<b-container class="bv-example-row">
+<b-container class="bv-example-row" id="container">
 
   <b-row>
-    <b-col cols="md-3" class="d-none d-md-block">
-      <SideBarLeft
+
+    <b-col cols="md-3" class="p-3 shadow-sm bg-white rounded">
+      <b-row class="sticky-top">
+        <UnreadPostsFilter class="sidebar float-left m-2" :userId="userId" :postArray="posts" v-on:reload="reload" v-on:filter-by-unread="filterByUnread" />
+        <MarkAllAsRead class="sidebar float-left m-2" v-on:reload="reload" />
+        <CreatePost class="sidebar float-left m-2" v-on:reload="reload" />
+        <GetUserPosts class="sidebar float-left m-2 d-none d-md-block" v-on:get-user-posts="displayUserPosts" />
+    </b-row>
+    </b-col>
+    <!-- mr-3 mb-2 -->
+
+    <!-- <b-col cols="md-3" class="d-none d-lg-block">
+      <SideBarLeft id="sidebar-big"
       class="sticky-top p-3 shadow-sm bg-white rounded"
       :userId="userId"
       :postArray="posts"
@@ -13,20 +24,20 @@
       v-on:get-user-posts-to-gp="displayUserPosts"
       v-on:filter-by-unread="filterByUnread"
     />
-    </b-col>
+    </b-col> -->
 
-    <b-col>  
-
-       <b-col cols="md-3" class="d-md-none">
-      <SideBarLeft
-      class="fixed-bottom p-3 shadow-sm bg-white rounded"
+    <!-- <b-col cols="" class="fixed-bottom">
+      <SideBarLeft id="sidebar-small"
+      class="p-3 shadow-sm bg-white rounded"
       :userId="userId"
       :postArray="posts"
       v-on:reload="reload"
       v-on:get-user-posts-to-gp="displayUserPosts"
       v-on:filter-by-unread="filterByUnread"
     />
-    </b-col>
+    </b-col> -->
+
+    <b-col>  
 
       <div
       id="get-posts-loop"
@@ -87,20 +98,27 @@
 
 <script>
 // @ is an alias to /src
-// import CreatePost from "@/components/main-post-area/CreatePost.vue";
+import CreatePost from "@/components/main-post-area/CreatePost.vue";
 // import Logout from "@/components/main-post-area/Logout.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
-import SideBarLeft from "@/components/left-sidebar/SideBarLeft.vue";
+import UnreadPostsFilter from "@/components/left-sidebar/UnreadPostsFilter.vue";
 import UserOptions from "@/components/main-post-area/user-options/UserOptions.vue";
+import MarkAllAsRead from "@/components/left-sidebar/MarkAllAsRead.vue";
+import GetUserPosts from "@/components/left-sidebar/GetUserPosts.vue";
+
+
 
 export default {
   name: "ParentPostsDisplay",
   //do i need to export all these?
   components: {
-    // CreatePost,
+    CreatePost,
+    UnreadPostsFilter,
+    MarkAllAsRead,
+    GetUserPosts,
     // Logout,
-    SideBarLeft,
+    // SideBarLeft,
     PostComment,
     DeleteComment,
     UserOptions
@@ -113,12 +131,15 @@ export default {
       writeComment: "",
       modifyCaption: "",
       limitCommentNumber: -3
+      // unreadPostsNum: 0
+      // aspectGreaterThan768: false
     };
   },
   mounted() {
     this.fetchPosts();
     this.userId = JSON.parse(sessionStorage.getItem("userId"));
-  },
+  
+},
   methods: {
     fetchPosts: async function() {
       const token = JSON.parse(sessionStorage.getItem("jwt"));
@@ -138,6 +159,9 @@ export default {
       this.writeComment = ""
       this.modifyCaption = ""
     },
+    // getUnreadNumber(payload) {
+    //   this.unreadPostsNum = payload
+    // },
     displayUserPosts(payload) {
       this.posts = payload;
     },
@@ -152,10 +176,15 @@ export default {
       const postId = event.target.id
       this.$router.push({ name: 'IndividualPost', query: { post: postId } })
     }
-    // displayGetOne(payload) {
-    //   this.posts = payload;
-    //   this.limitCommentNumber = 0
-    // }
   }
 };
 </script>
+
+<style>
+@media only screen and (min-width: 768px) {
+  /* For mobile phones: */
+  .sidebar {
+    padding: 20px;
+  }
+}
+</style>
