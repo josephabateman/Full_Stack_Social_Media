@@ -17,7 +17,16 @@
 
     <b-col>  
 
-      <CreatePost class="mr-2" v-on:reload="reload" />
+       <b-col cols="md-3" class="d-md-none">
+      <SideBarLeft
+      class="fixed-bottom p-3 shadow-sm bg-white rounded"
+      :userId="userId"
+      :postArray="posts"
+      v-on:reload="reload"
+      v-on:get-user-posts-to-gp="displayUserPosts"
+      v-on:filter-by-unread="filterByUnread"
+    />
+    </b-col>
 
       <div
       id="get-posts-loop"
@@ -78,7 +87,7 @@
 
 <script>
 // @ is an alias to /src
-import CreatePost from "@/components/main-post-area/CreatePost.vue";
+// import CreatePost from "@/components/main-post-area/CreatePost.vue";
 // import Logout from "@/components/main-post-area/Logout.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
@@ -89,7 +98,7 @@ export default {
   name: "ParentPostsDisplay",
   //do i need to export all these?
   components: {
-    CreatePost,
+    // CreatePost,
     // Logout,
     SideBarLeft,
     PostComment,

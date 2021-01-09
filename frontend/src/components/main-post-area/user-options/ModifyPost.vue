@@ -1,10 +1,10 @@
 <template>
   <div class="modify-post">
 
-<b-button v-b-modal.modal-modify-post variant="info">Modify Post</b-button>
+<b-button v-b-modal.:id="modalId" variant="info">Modify Post</b-button>
   
     <b-modal
-      id="modal-modify-post"
+      :id="modalId"
       ok-title = "Submit changes"
       ref="modal"
       title="Edit Post"
@@ -13,11 +13,11 @@
 
     <b-form-group enctype="multipart/form-data">
       <label for="modifyCaption">modify caption</label>
-      <input type="text" id="modifyCaption" v-model="caption" />
+      <input type="text" v-model="caption" />
       <br />
 
       <label for="file_to_submit">Upload a gif</label>
-      <b-form-file id="modify_file_to_submit" />
+      <b-form-file :id="fileId" />
       <br />
 
     </b-form-group>
@@ -37,15 +37,24 @@ export default {
   },
   data() {
     return {
-      caption: ""
+      caption: '',
+      modalId: '',
+      fileId: ''
     };
   },
+   mounted() {
+    this.ids()
+  },
   methods: {
+    ids() {
+      this.modalId = 'modal-modify-post-' + this.postId
+      this.fileId = 'modify_file_to_submit-' + this.postId
+    },
     modifyPost: async function() {
       // this.$emit("reload");
       const token = JSON.parse(sessionStorage.getItem("jwt"));
       const caption = this.caption;
-      const file = document.getElementById("modify_file_to_submit").files[0];
+      const file = document.getElementById(this.fileId).files[0];
       const postId = this.postId;
 
       if (caption !== "") {

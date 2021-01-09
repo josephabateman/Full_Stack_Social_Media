@@ -3,7 +3,7 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-md-8 d-flex justify-content-start">
+        <div @click.prevent="homePage" style="cursor:pointer" class="col-md-8 d-flex justify-content-start">
           <img class="mb-3"
             alt="Vue logo"
             src="../../assets/Groupomania_Logos/icon-left-font.png"
@@ -21,6 +21,18 @@
 
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    homePage() {
+       if (this.$router.history.current.path !== '/parent-posts-display') {
+        this.$router.push({ name: 'ParentPostsDisplay' })
+      }
+    }
+  }
+}
+</script>
 
 <style scoped>
 #nav {

@@ -1,13 +1,19 @@
 <template>
   <div class="mark-all-as-read">
     <b-button @click.prevent="markAllAsRead" class="btn btn-light">Mark all read</b-button>
+
   </div>
 </template>
 
 <script>
 export default {
-  name: "MarkAllAsRead",
-  methods: {
+name: "MarkAllAsRead",
+  data() {
+    return {
+      
+    }
+  },
+methods: {
     markAllAsRead: async function() {
       const token = JSON.parse(sessionStorage.getItem("jwt"));
 

@@ -52,11 +52,7 @@
     </b-col>
 
   </b-row>
-
-
-
-      
-
+  
   </b-container>
 
   </div>
