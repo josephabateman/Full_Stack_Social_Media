@@ -4,11 +4,6 @@
 
   <b-container class="bv-example-row">
 
-  <div class="col-md d-flex justify-content-start">
-    <CreatePost class="mr-2" />
-    <Logout />
-  </div>
-
   <b-row>
 
     <b-col>
@@ -69,8 +64,8 @@
 
 <script>
 
-import CreatePost from "@/components/main-post-area/CreatePost.vue";
-import Logout from "@/components/main-post-area/Logout.vue";
+// import CreatePost from "@/components/main-post-area/CreatePost.vue";
+// import Logout from "@/components/main-post-area/Logout.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
 import UserOptions from "@/components/main-post-area/user-options/UserOptions.vue";
@@ -78,8 +73,8 @@ import UserOptions from "@/components/main-post-area/user-options/UserOptions.vu
 export default {
   name: "GetOne",
   components: {
-    CreatePost,
-    Logout,
+    // CreatePost,
+    // Logout,
     PostComment,
     DeleteComment,
     UserOptions

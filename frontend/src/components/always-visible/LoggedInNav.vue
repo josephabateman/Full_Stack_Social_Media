@@ -13,7 +13,7 @@
         <div class="col-md d-flex justify-content-end">
            <nav>
             <router-link to="/parent-posts-display">Posts</router-link>
-            <router-link to="/my-account">My Account</router-link>         
+            <router-link to="/my-account">My Account</router-link>   
           </nav>
         </div>
       </div>

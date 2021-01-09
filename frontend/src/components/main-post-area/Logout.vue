@@ -1,6 +1,6 @@
 <template>
   <div id="logout">
-    <b-button @click.prevent="logout" class="btn btn-light">Logout</b-button>
+    <b-button @click.prevent="logout" class="btn btn-secondary">Logout</b-button>
   </div>
 </template>
 
@@ -14,8 +14,8 @@ export default {
       // vue router redirect is not working
       sessionStorage.setItem("loggedIn", 'false');
       this.$emit('show-not-logged-in-nav')
-      window.location.href = "/";
-      console.log("logged out");
+      // window.location.href = "/";
+      this.$router.push({ name: 'Login' })
     }
   }
 };

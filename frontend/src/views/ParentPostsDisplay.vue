@@ -3,13 +3,8 @@
 
 <b-container class="bv-example-row">
 
-  <div class="col-md d-flex justify-content-end">
-    <CreatePost class="mr-2" />
-    <Logout />
-  </div>
-
   <b-row>
-    <b-col cols="3" class="d-none d-md-block">
+    <b-col cols="md-3" class="d-none d-md-block">
       <SideBarLeft
       class="sticky-top p-3 shadow-sm bg-white rounded"
       :userId="userId"
@@ -21,24 +16,9 @@
     </b-col>
 
     <b-col>  
-      <!-- <b-col class="d-md-none d-flex justify-content-center">
-      
-    </b-col> -->
 
-      <!-- <div class="d-flex flex-row-reverse shadow-sm p-3 mb-5 bg-white rounded">
-        <div class="p-2"><CreatePost v-on:reload="reload" /></div>
-        <div class="p-2"><Logout /></div>
-      </div> -->
+      <CreatePost class="mr-2" v-on:reload="reload" />
 
-      <SideBarLeft
-          class="d-md-none"
-          :userId="userId"
-          :postArray="posts"
-          v-on:reload="reload"
-          v-on:get-user-posts-to-gp="displayUserPosts"
-          v-on:filter-by-unread="filterByUnread"
-        />
-    
       <div
       id="get-posts-loop"
       v-for="post in posts"
@@ -99,7 +79,7 @@
 <script>
 // @ is an alias to /src
 import CreatePost from "@/components/main-post-area/CreatePost.vue";
-import Logout from "@/components/main-post-area/Logout.vue";
+// import Logout from "@/components/main-post-area/Logout.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
 import SideBarLeft from "@/components/left-sidebar/SideBarLeft.vue";
@@ -110,7 +90,7 @@ export default {
   //do i need to export all these?
   components: {
     CreatePost,
-    Logout,
+    // Logout,
     SideBarLeft,
     PostComment,
     DeleteComment,
@@ -155,8 +135,9 @@ export default {
     filterByUnread(payload) {
       if (payload.length === 0) {
         alert('You have no unread posts')
+      } else {
+        this.posts = payload;
       }
-      this.posts = payload;
     },
     displayGetOne() {
       const postId = event.target.id
