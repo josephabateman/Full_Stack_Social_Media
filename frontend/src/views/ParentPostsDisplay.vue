@@ -8,9 +8,10 @@
     <b-col cols="md-3" class="p-3 shadow-sm bg-white rounded">
       <b-row class="sticky-top">
         <UnreadPostsFilter class="sidebar float-left m-2" :userId="userId" :postArray="posts" v-on:reload="reload" v-on:filter-by-unread="filterByUnread" />
-        <MarkAllAsRead class="sidebar float-left m-2" v-on:reload="reload" />
+        <MarkAllAsRead class="sidebar float-left m-2" v-on:reload="reload" :btnClicked="btnClicked" />
+        <ShowAllPosts class="sidebar float-left m-2" v-on:reload="reload" :btnClicked="btnClicked" />
         <CreatePost class="sidebar float-left m-2" v-on:reload="reload" />
-        <GetUserPosts class="sidebar float-left m-2 d-none d-md-block" v-on:get-user-posts="displayUserPosts" />
+        <GetUserPosts class="sidebar float-left m-2 d-none d-md-block" v-on:get-user-posts="displayUserPosts" :btnClicked="btnClicked" />
     </b-row>
     </b-col>
     <!-- mr-3 mb-2 -->
@@ -99,26 +100,23 @@
 <script>
 // @ is an alias to /src
 import CreatePost from "@/components/main-post-area/CreatePost.vue";
-// import Logout from "@/components/main-post-area/Logout.vue";
 import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
 import UnreadPostsFilter from "@/components/left-sidebar/UnreadPostsFilter.vue";
 import UserOptions from "@/components/main-post-area/user-options/UserOptions.vue";
 import MarkAllAsRead from "@/components/left-sidebar/MarkAllAsRead.vue";
 import GetUserPosts from "@/components/left-sidebar/GetUserPosts.vue";
-
+import ShowAllPosts from "@/components/left-sidebar/ShowAllPosts.vue";
 
 
 export default {
   name: "ParentPostsDisplay",
-  //do i need to export all these?
   components: {
     CreatePost,
     UnreadPostsFilter,
     MarkAllAsRead,
     GetUserPosts,
-    // Logout,
-    // SideBarLeft,
+    ShowAllPosts,
     PostComment,
     DeleteComment,
     UserOptions
@@ -130,9 +128,8 @@ export default {
       postId: "",
       writeComment: "",
       modifyCaption: "",
-      limitCommentNumber: -3
-      // unreadPostsNum: 0
-      // aspectGreaterThan768: false
+      limitCommentNumber: -3,
+      btnClicked: ''
     };
   },
   mounted() {
@@ -154,16 +151,15 @@ export default {
       
       this.posts = await jsonData;
     },
-    reload() {
+    reload(btn) {
       this.fetchPosts();
       this.writeComment = ""
       this.modifyCaption = ""
+      this.btnClicked = btn
     },
-    // getUnreadNumber(payload) {
-    //   this.unreadPostsNum = payload
-    // },
     displayUserPosts(payload) {
       this.posts = payload;
+      this.btnClicked = 'get-user-posts'
     },
     filterByUnread(payload) {
       if (payload.length === 0) {

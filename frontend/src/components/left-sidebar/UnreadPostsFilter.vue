@@ -34,9 +34,6 @@
               <path d="M8.354 10.354l7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
             </svg>
           </p>   
-
-    <b-button class="btn btn-light float-left d-none d-md-block" @click.prevent="$emit('reload')">Show all posts</b-button>
-
     
   
   </div>

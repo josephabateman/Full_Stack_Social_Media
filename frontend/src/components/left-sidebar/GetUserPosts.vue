@@ -1,6 +1,6 @@
 <template>
   <div class="get-user-posts">
-    <b-button @click.prevent="getUserPosts" class="btn btn-light">My Posts</b-button>
+    <b-button id="get-user-posts" @click.prevent="getUserPosts" class="btn btn-light">My Posts</b-button>
   </div>
 </template>
 
@@ -9,10 +9,19 @@ export default {
   name: "GetUserPosts",
   props: {
     commentId: String,
-    postArray: Array
+    postArray: Array,
+    btnClicked: String
   },
   data() {
     return {};
+  },
+ watch: {
+    btnClicked() {
+      const btn = document.getElementById('get-user-posts')
+      if (this.btnClicked !== 'get-user-posts') {
+        btn.classList = 'btn btn-light' 
+      } 
+    }
   },
   methods: {
     getUserPosts: async function() {
@@ -31,6 +40,8 @@ export default {
       if (jsonDataUserPosts.error) {
         alert(jsonDataUserPosts.error);
       }
+      const btn = document.getElementById('get-user-posts')
+      btn.classList = 'btn btn-primary' 
       this.$emit("get-user-posts", jsonDataUserPosts);
     }
   }

@@ -36,12 +36,14 @@ export default {
         if (response.token !== undefined) {
           sessionStorage.setItem("jwt", JSON.stringify(response.token));
           sessionStorage.setItem("userId", JSON.stringify(response.userId));
-
+          sessionStorage.setItem("loggedIn", "true");
+          
           // change from user id to something else
           const parsedUserId = JSON.parse(sessionStorage.getItem("userId"));
           this.userId = parsedUserId;
 
            //redirect to logged in home page
+          this.$emit('show-logged-in-nav')
           this.$router.push({ name: 'ParentPostsDisplay' })
         }
       } catch (error) {

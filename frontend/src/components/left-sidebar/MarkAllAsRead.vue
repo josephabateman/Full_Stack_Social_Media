@@ -1,6 +1,6 @@
 <template>
   <div class="mark-all-as-read">
-    <b-button @click.prevent="markAllAsRead" class="btn btn-light">Mark all read</b-button>
+    <b-button id="mark-all-as-read-btn" @click.prevent="markAllAsRead" class="btn btn-light">Mark all read</b-button>
 
   </div>
 </template>
@@ -11,6 +11,17 @@ name: "MarkAllAsRead",
   data() {
     return {
       
+    }
+  },
+props: {
+    btnClicked: String
+  },
+ watch: {
+    btnClicked() {
+      const btn = document.getElementById('mark-all-as-read-btn')
+      if (this.btnClicked !== 'mark-all-as-read-btn') {
+        btn.classList = 'btn btn-light' 
+      }
     }
   },
 methods: {
@@ -34,8 +45,9 @@ methods: {
       if (response.error) {
         alert(response.error);
       }
-      // this.unreadPostsNum = 0
-      this.$emit("reload");
+      const btn = document.getElementById('mark-all-as-read-btn')
+      btn.classList = 'btn btn-primary' 
+      this.$emit("reload", 'mark-all-as-read-btn');
     }
   }
 };
