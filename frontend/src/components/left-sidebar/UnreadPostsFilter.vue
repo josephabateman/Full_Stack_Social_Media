@@ -1,23 +1,6 @@
 <template>
   <div class="unread-posts-filter">
 
-    <b-alert
-      :show="dismissCountDown"
-      dismissible
-      variant="warning"
-      @dismissed="dismissCountDown=0"
-      @dismiss-count-down="countDownChanged"
-    >
-      <p>Displaying unread posts</p>
-
-      <b-progress
-        variant="warning"
-        :max="dismissSecs"
-        :value="dismissCountDown"
-        height="4px"
-      ></b-progress>
-    </b-alert>
-
   <!-- show if unread posts -->
     <div v-if="unreadPostsNum>=1">
       <button id="unread-posts-num" @click.prevent="filterByUnread" class="btn btn-outline-primary border-0 mb-2 float-left">
@@ -28,10 +11,10 @@
     </button>
     
     <!-- mark as read -->
-    <b-button id="mark-all-as-read-btn" @click.prevent="markAllAsRead" class="btn btn-outline-primary border-0 bg-transparent text-danger">
+    <b-button id="mark-all-as-read-btn" @click.prevent="markAllAsRead" class="btn border-0 bg-transparent text-danger">
       <!-- icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-check-fill" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zm8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-open" viewBox="0 0 16 16">
+        <path d="M8.47 1.318a1 1 0 0 0-.94 0l-6 3.2A1 1 0 0 0 1 5.4v.818l5.724 3.465L8 8.917l1.276.766L15 6.218V5.4a1 1 0 0 0-.53-.882l-6-3.2zM15 7.388l-4.754 2.877L15 13.117v-5.73zm-.035 6.874L8 10.083l-6.965 4.18A1 1 0 0 0 2 15h12a1 1 0 0 0 .965-.738zM1 13.117l4.754-2.852L1 7.387v5.73zM7.059.435a2 2 0 0 1 1.882 0l6 3.2A2 2 0 0 1 16 5.4V14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5.4a2 2 0 0 1 1.059-1.765l6-3.2z"/>
       </svg>
     </b-button>
     </div>
@@ -54,15 +37,11 @@ export default {
   props: {
     msg: String,
     userId: String,
-    postArray: Array,
-    postsToMarkAsRead: Array
+    postArray: Array
 },
  watch: {
    postArray() {
       this.updateUnreadNumber();
-    },
-    postsToMarkAsRead() {
-      console.log(postsToMarkAsRead)
     }
   },
   data() {
@@ -75,12 +54,6 @@ export default {
     };
   },
   methods: {
-    countDownChanged(dismissCountDown) {
-      this.dismissCountDown = dismissCountDown
-    },
-    showAlert() {
-      this.dismissCountDown = this.dismissSecs
-    },
     getUserPostsToGp(payload) {
       //this is the parent - now go to gp
       this.$emit("get-user-posts-to-gp", payload);
@@ -104,7 +77,6 @@ export default {
       btn.classList = 'btn btn-primary' 
       this.$emit("reload", 'unread-posts-num');
 
-      this.showAlert()
       this.$emit("filter-by-unread", this.filteredByUnread);
     },
     markAllAsRead: async function() {
@@ -127,7 +99,7 @@ export default {
       if (response.error) {
         alert(response.error);
       } else {
-        this.$emit('reload', 'show-all-posts')
+        this.$emit('reload', {btnName: 'show-all-posts', alertMessage: 'No posts to read'})
       }
     }
   }

@@ -25,7 +25,7 @@ export default {
     showAllPosts: function() {
       const btn = document.getElementById('show-all-posts')
       btn.classList = 'btn btn-success' 
-      this.$emit('reload', 'show-all-posts');
+      this.$emit('reload', {btnName: 'show-all-posts', alertMessage: 'Showing all posts'});
     }
   }
 };
