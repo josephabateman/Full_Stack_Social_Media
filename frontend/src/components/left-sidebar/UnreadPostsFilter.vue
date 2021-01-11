@@ -55,18 +55,18 @@ export default {
     msg: String,
     userId: String,
     postArray: Array,
-    btnClicked: String
+    // btnClicked: String
   },
  watch: {
    postArray() {
       this.updateUnreadNumber();
     },
-    btnClicked() {
-      const btn = document.getElementById('unread-posts-num')
-      if (this.btnClicked !== 'unread-posts-num') {
-        btn.classList = 'btn btn-outline-primary border-0 mb-2 float-left' 
-      }
-    }
+    // btnClicked() {
+    //   const btn = document.getElementById('unread-posts-num')
+    //   if (this.btnClicked !== 'unread-posts-num') {
+    //     btn.classList = 'btn btn-outline-primary border-0 mb-2 float-left' 
+    //   }
+    // }
   },
   data() {
     return {
@@ -130,7 +130,7 @@ export default {
       if (response.error) {
         alert(response.error);
       } else {
-        this.$emit('reload')
+        this.$emit('reload', 'show-all-posts')
       }
     }
   }

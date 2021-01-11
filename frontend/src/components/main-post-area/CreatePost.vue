@@ -58,8 +58,6 @@ export default {
         const options = {
           method: "POST",
           headers: {
-            // 'Accept': 'application/json',
-            // 'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
           body: fd
@@ -70,7 +68,7 @@ export default {
         if (response.error) {
           alert(response.error);
         }
-        await this.$emit("reload");
+        await this.$emit('reload', 'show-all-posts');
         this.caption = ""
       }
     }
