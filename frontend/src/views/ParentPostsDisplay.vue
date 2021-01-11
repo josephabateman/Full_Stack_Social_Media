@@ -103,13 +103,13 @@ export default {
       writeComment: "",
       modifyCaption: "",
       limitCommentNumber: -3,
-      btnClicked: ''
+      btnClicked: '',
+      postsToMarkAsRead: []
     };
   },
   mounted() {
     this.fetchPosts();
     this.userId = JSON.parse(sessionStorage.getItem("userId"));
-  
 },
   methods: {
     fetchPosts: async function() {

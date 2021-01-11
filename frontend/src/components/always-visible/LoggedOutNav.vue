@@ -4,10 +4,11 @@
     <div class="container">
       <div class="row">
         <div @click.prevent="homePage" style="cursor:pointer" class="col-md-9 d-flex justify-content-start">
-           <img class="mb-3"
+           <img 
+              class="mb-3"
               alt="Vue logo"
               src="../../assets/Groupomania_Logos/icon-left-font.png"
-              width="300"
+              width="200px"
             />
         </div>
         <div class="col-md d-flex justify-content-end">

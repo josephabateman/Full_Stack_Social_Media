@@ -1,7 +1,7 @@
 <template>
   <div class="create-post">
 
-    <b-button v-b-modal.modal-create-post class="btn btn-light">Create Post</b-button>
+    <b-button v-if="dismissCountDown==0" v-b-modal.modal-create-post class="btn btn-light">Create Post</b-button>
   
     <b-modal
       id="modal-create-post"
@@ -24,6 +24,25 @@
    
     </b-modal> 
 
+     <!-- alert on success -->
+     <b-alert
+     class="p-3 mb-3"
+      :show="dismissCountDown"
+      
+      variant="warning"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+    >
+      <p>Post successfully created</p>
+
+      <b-progress
+        variant="warning"
+        :max="dismissSecs"
+        :value="dismissCountDown"
+        height="4px"
+      ></b-progress>
+    </b-alert>
+
 
   </div>
 </template>
@@ -36,7 +55,9 @@ export default {
   },
   data() {
     return {
-      caption: ""
+      caption: "",
+      dismissSecs: 4,
+      dismissCountDown: 0
     };
   },
   methods: {
@@ -70,8 +91,15 @@ export default {
         }
         await this.$emit('reload', 'show-all-posts');
         this.caption = ""
+        this.showAlert()
       }
-    }
+    },
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown
+    },
+    showAlert() {
+      this.dismissCountDown = this.dismissSecs
+    },
   }
 };
 </script>
