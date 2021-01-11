@@ -7,36 +7,12 @@
 
     <b-col cols="md-3" class="p-3 shadow-sm bg-white rounded">
       <b-row class="sticky-top">
-        <UnreadPostsFilter class="sidebar float-left m-2" :userId="userId" :postArray="posts" v-on:reload="reload" v-on:filter-by-unread="filterByUnread" />
-        <MarkAllAsRead class="sidebar float-left m-2" v-on:reload="reload" :btnClicked="btnClicked" />
+        <UnreadPostsFilter class="sidebar float-left m-2" :userId="userId" :postArray="posts" :btnClicked="btnClicked" v-on:reload="reload" v-on:filter-by-unread="filterByUnread" />
         <ShowAllPosts class="sidebar float-left m-2" v-on:reload="reload" :btnClicked="btnClicked" />
         <CreatePost class="sidebar float-left m-2" v-on:reload="reload" />
         <GetUserPosts class="sidebar float-left m-2 d-none d-md-block" v-on:get-user-posts="displayUserPosts" :btnClicked="btnClicked" />
     </b-row>
     </b-col>
-    <!-- mr-3 mb-2 -->
-
-    <!-- <b-col cols="md-3" class="d-none d-lg-block">
-      <SideBarLeft id="sidebar-big"
-      class="sticky-top p-3 shadow-sm bg-white rounded"
-      :userId="userId"
-      :postArray="posts"
-      v-on:reload="reload"
-      v-on:get-user-posts-to-gp="displayUserPosts"
-      v-on:filter-by-unread="filterByUnread"
-    />
-    </b-col> -->
-
-    <!-- <b-col cols="" class="fixed-bottom">
-      <SideBarLeft id="sidebar-small"
-      class="p-3 shadow-sm bg-white rounded"
-      :userId="userId"
-      :postArray="posts"
-      v-on:reload="reload"
-      v-on:get-user-posts-to-gp="displayUserPosts"
-      v-on:filter-by-unread="filterByUnread"
-    />
-    </b-col> -->
 
     <b-col>  
 
@@ -104,7 +80,6 @@ import PostComment from "@/components/main-post-area/PostComment.vue";
 import DeleteComment from "@/components/main-post-area/DeleteComment.vue";
 import UnreadPostsFilter from "@/components/left-sidebar/UnreadPostsFilter.vue";
 import UserOptions from "@/components/main-post-area/user-options/UserOptions.vue";
-import MarkAllAsRead from "@/components/left-sidebar/MarkAllAsRead.vue";
 import GetUserPosts from "@/components/left-sidebar/GetUserPosts.vue";
 import ShowAllPosts from "@/components/left-sidebar/ShowAllPosts.vue";
 
@@ -114,7 +89,6 @@ export default {
   components: {
     CreatePost,
     UnreadPostsFilter,
-    MarkAllAsRead,
     GetUserPosts,
     ShowAllPosts,
     PostComment,

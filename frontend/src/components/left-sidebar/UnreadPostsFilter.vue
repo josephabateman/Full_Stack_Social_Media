@@ -19,13 +19,18 @@
           </b-alert>
 
        <!-- show if unread posts -->
-          <button v-if="unreadPostsNum>=1" @click.prevent="filterByUnread" class="btn btn-outline-primary border-0 mb-2 float-left">
+          <div v-if="unreadPostsNum>=1">
+            <button id="unread-posts-num" @click.prevent="filterByUnread" class="btn btn-outline-primary border-0 mb-2 float-left">
             {{ unreadPostsNum }} unread
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
               <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
             </svg>
           </button>
-
+          
+          <!-- mark as read -->
+          <b-button id="mark-all-as-read-btn" @click.prevent="markAllAsRead" class="btn btn-light">Mark all read</b-button>
+          </div>
+          
             <!-- show if read -->
           <p v-else class="m-2 text-success">
             No posts to read
@@ -46,10 +51,22 @@
 
 export default {
   name: "UnreadPostsFilter",
-  components: {
-    // MarkAllAsRead,
-    // GetUserPosts,
-    // CreatePost
+  props: {
+    msg: String,
+    userId: String,
+    postArray: Array,
+    btnClicked: String
+  },
+ watch: {
+   postArray() {
+      this.updateUnreadNumber();
+    },
+    btnClicked() {
+      const btn = document.getElementById('unread-posts-num')
+      if (this.btnClicked !== 'unread-posts-num') {
+        btn.classList = 'btn btn-outline-primary border-0 mb-2 float-left' 
+      }
+    }
   },
   data() {
     return {
@@ -59,17 +76,6 @@ export default {
       dismissSecs: 4,
       dismissCountDown: 0
     };
-  },
-  //inefficient to always watch this
-  watch: {
-    postArray() {
-      this.updateUnreadNumber();
-    }
-  },
-  props: {
-    msg: String,
-    userId: String,
-    postArray: Array
   },
   methods: {
     countDownChanged(dismissCountDown) {
@@ -97,8 +103,35 @@ export default {
       }
     },
     filterByUnread() {
+      const btn = document.getElementById('unread-posts-num')
+      btn.classList = 'btn btn-primary' 
+      this.$emit("reload", 'unread-posts-num');
+
       this.showAlert()
       this.$emit("filter-by-unread", this.filteredByUnread);
+    },
+    markAllAsRead: async function() {
+      const token = JSON.parse(sessionStorage.getItem("jwt"));
+
+      const options = {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      };
+
+      const request = await fetch(
+        "http://localhost:5001/posts/markAllAsRead",
+        options
+      );
+      const response = await request.json();
+      if (response.error) {
+        alert(response.error);
+      } else {
+        this.$emit('reload')
+      }
     }
   }
 };
