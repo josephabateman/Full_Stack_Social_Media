@@ -1,6 +1,8 @@
 <template>
   <div class="delete-account">
-    <b-button @click.prevent="deleteAccount" variant="outline-danger">Delete Account</b-button>
+    <b-button @click.prevent="deleteAccount" class="btn btn-danger"
+      >Delete Account</b-button
+    >
     <h1>{{ msg }}</h1>
   </div>
 </template>
@@ -9,7 +11,7 @@
 export default {
   name: "DeleteAccount",
   props: {
-    msg: String
+    msg: String,
   },
   methods: {
     deleteAccount: async function() {
@@ -22,15 +24,15 @@ export default {
         const password = prompt("Please enter your account password");
 
         const data = {
-          password: password
+          password: password,
         };
         const options = {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         };
         const request = await fetch(
           "http://localhost:5001/deleteUser",
@@ -42,28 +44,16 @@ export default {
         } else {
           alert(jsonResponse.message);
         }
-
-        //run logout method to delete session storage an send to home page
+        this.logout();
       }
-    }
-  }
+    },
+    logout() {
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("jwt");
+      sessionStorage.setItem("loggedIn", "false");
+      this.$emit("show-not-logged-in-nav");
+      this.$router.push({ name: "Login" });
+    },
+  },
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

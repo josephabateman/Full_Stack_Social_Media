@@ -1,30 +1,24 @@
 <template>
   <div class="modify-post">
+    <b-button v-b-modal.:id="modalId" variant="info">Modify Post</b-button>
 
-<b-button v-b-modal.:id="modalId" variant="info">Modify Post</b-button>
-  
     <b-modal
       :id="modalId"
-      ok-title = "Submit changes"
+      ok-title="Submit changes"
       ref="modal"
       title="Edit Post"
       @ok="modifyPost"
     >
+      <b-form-group enctype="multipart/form-data">
+        <label for="modifyCaption">modify caption</label>
+        <input type="text" v-model="caption" />
+        <br />
 
-    <b-form-group enctype="multipart/form-data">
-      <label for="modifyCaption">modify caption</label>
-      <input type="text" v-model="caption" />
-      <br />
-
-      <label for="file_to_submit">Upload a gif</label>
-      <b-form-file :id="fileId" />
-      <br />
-
-    </b-form-group>
-   
-    </b-modal> 
-
-
+        <label for="file_to_submit">Upload a gif</label>
+        <b-form-file :id="fileId" />
+        <br />
+      </b-form-group>
+    </b-modal>
   </div>
 </template>
 
@@ -33,25 +27,24 @@ export default {
   name: "ModifyPost",
   props: {
     msg: String,
-    postId: String
+    postId: String,
   },
   data() {
     return {
-      caption: '',
-      modalId: '',
-      fileId: ''
+      caption: "",
+      modalId: "",
+      fileId: "",
     };
   },
-   mounted() {
-    this.ids()
+  mounted() {
+    this.ids();
   },
   methods: {
     ids() {
-      this.modalId = 'modal-modify-post-' + this.postId
-      this.fileId = 'modify_file_to_submit-' + this.postId
+      this.modalId = "modal-modify-post-" + this.postId;
+      this.fileId = "modify_file_to_submit-" + this.postId;
     },
     modifyPost: async function() {
-      // this.$emit("reload");
       const token = JSON.parse(sessionStorage.getItem("jwt"));
       const caption = this.caption;
       const file = document.getElementById(this.fileId).files[0];
@@ -66,9 +59,9 @@ export default {
         const options = {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: fd
+          body: fd,
         };
 
         const response = await fetch("http://localhost:5001/posts", options);
@@ -77,9 +70,9 @@ export default {
           alert(jsonResponse.error);
         }
         await this.$emit("reload");
-        this.caption = ""
+        this.caption = "";
       }
-    }
-  }
+    },
+  },
 };
 </script>

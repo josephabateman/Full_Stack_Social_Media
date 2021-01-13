@@ -1,14 +1,20 @@
 <template>
   <div class="user-options">
-
-  <div>
-    <b-button class="btn-sm" v-b-modal.:id="postId" variant="info">User Options</b-button>
-    <b-modal :id="postId" size="sm" title="User options" ok-only ok-title="never mind">
-      <ModifyPost :postId="postId" v-on:reload="closeModal" class="mb-3" />
-      <DeletePost :postId="postId" v-on:reload="closeModal" />
-    </b-modal>
-  </div>
-
+    <div>
+      <b-button class="btn-sm" v-b-modal.:id="postId" variant="info"
+        >User Options</b-button
+      >
+      <b-modal
+        :id="postId"
+        size="sm"
+        title="User options"
+        ok-only
+        ok-title="never mind"
+      >
+        <ModifyPost :postId="postId" v-on:reload="closeModal" class="mb-3" />
+        <DeletePost :postId="postId" v-on:reload="closeModal" />
+      </b-modal>
+    </div>
   </div>
 </template>
 
@@ -20,22 +26,22 @@ export default {
   name: "UserOptions",
   components: {
     ModifyPost,
-    DeletePost
+    DeletePost,
   },
   props: {
     msg: String,
-    postId: String
+    postId: String,
   },
   data() {
     return {
-      caption: ""
+      caption: "",
     };
   },
   methods: {
     closeModal() {
-      this.$emit('reload')
-      this.$root.$emit('bv::hide::modal', this.postId)
-    }
-  }
+      this.$emit("reload");
+      this.$root.$emit("bv::hide::modal", this.postId);
+    },
+  },
 };
 </script>

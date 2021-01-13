@@ -1,6 +1,11 @@
 <template>
   <div class="get-user-posts">
-    <b-button id="get-user-posts" @click.prevent="getUserPosts" class="btn btn-light">My Posts</b-button>
+    <b-button
+      id="get-user-posts"
+      @click.prevent="getUserPosts"
+      class="btn btn-light"
+      >My Posts</b-button
+    >
   </div>
 </template>
 
@@ -10,18 +15,18 @@ export default {
   props: {
     commentId: String,
     postArray: Array,
-    btnClicked: String
+    btnClicked: String,
   },
   data() {
     return {};
   },
- watch: {
+  watch: {
     btnClicked() {
-      const btn = document.getElementById('get-user-posts')
-      if (this.btnClicked !== 'get-user-posts') {
-        btn.classList = 'btn btn-light' 
-      } 
-    }
+      const btn = document.getElementById("get-user-posts");
+      if (this.btnClicked !== "get-user-posts") {
+        btn.classList = "btn btn-light";
+      }
+    },
   },
   methods: {
     getUserPosts: async function() {
@@ -30,20 +35,19 @@ export default {
       const options = {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       };
 
-      //make more secure
       const response = await fetch(`http://localhost:5001/userId`, options);
       const jsonDataUserPosts = await response.json();
       if (jsonDataUserPosts.error) {
         alert(jsonDataUserPosts.error);
       }
-      const btn = document.getElementById('get-user-posts')
-      btn.classList = 'btn btn-primary' 
+      const btn = document.getElementById("get-user-posts");
+      btn.classList = "btn btn-primary";
       this.$emit("get-user-posts", jsonDataUserPosts);
-    }
-  }
+    },
+  },
 };
 </script>

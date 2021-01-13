@@ -11,7 +11,7 @@ import GetOne from "@/components/main-post-area/GetOne.vue";
 export default {
   name: "Login",
   components: {
-    GetOne
-  }
+    GetOne,
+  },
 };
 </script>
