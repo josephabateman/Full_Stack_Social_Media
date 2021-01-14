@@ -25,7 +25,6 @@
 import LoggedInNav from "@/components/nav/LoggedInNav";
 import LoggedOutNav from "@/components/nav/LoggedOutNav";
 import Logout from "@/components/main-post-area/Logout.vue";
-
 export default {
   name: "App",
   components: {
@@ -65,14 +64,11 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-
 #nav {
   padding: 30px;
-
   a {
     font-weight: bold;
     color: #2c3e50;
-
     &.router-link-exact-active {
       color: #f03333;
     }

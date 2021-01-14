@@ -16,7 +16,7 @@ import HomeInfo from "@/components/not-logged-in/HomeInfo.vue";
 export default {
   name: "Home",
   components: {
-    HomeInfo,
-  },
+    HomeInfo
+  }
 };
 </script>

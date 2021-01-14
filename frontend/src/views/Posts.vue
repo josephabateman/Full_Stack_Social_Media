@@ -139,7 +139,7 @@ export default {
     ShowAllPosts,
     PostComment,
     DeleteComment,
-    UserOptions,
+    UserOptions
   },
   data() {
     return {
@@ -152,7 +152,7 @@ export default {
       btnClicked: "",
       dismissSecs: 4,
       dismissCountDown: 0,
-      alertMessage: "",
+      alertMessage: ""
     };
   },
   mounted() {
@@ -165,8 +165,8 @@ export default {
       const options = {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const response = await fetch("http://localhost:5001", options);
       const jsonData = await response.json();
@@ -206,7 +206,7 @@ export default {
     },
     showAlert() {
       this.dismissCountDown = this.dismissSecs;
-    },
-  },
+    }
+  }
 };
 </script>

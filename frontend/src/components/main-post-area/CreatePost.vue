@@ -28,11 +28,11 @@
 export default {
   name: "CreatePost",
   props: {
-    msg: String,
+    msg: String
   },
   data() {
     return {
-      caption: "",
+      caption: ""
     };
   },
   methods: {
@@ -51,9 +51,9 @@ export default {
         const options = {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: fd,
+          body: fd
         };
 
         const request = await fetch("http://localhost:5001/posts", options);
@@ -63,11 +63,11 @@ export default {
         }
         this.$emit("reload", {
           btnName: "show-all-posts",
-          alertMessage: "Successfully created",
+          alertMessage: "Successfully created"
         });
         this.caption = "";
       }
-    },
-  },
+    }
+  }
 };
 </script>

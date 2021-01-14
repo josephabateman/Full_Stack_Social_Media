@@ -11,7 +11,7 @@
 export default {
   name: "DeleteAccount",
   props: {
-    msg: String,
+    msg: String
   },
   methods: {
     deleteAccount: async function() {
@@ -24,15 +24,15 @@ export default {
         const password = prompt("Please enter your account password");
 
         const data = {
-          password: password,
+          password: password
         };
         const options = {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch(
           "http://localhost:5001/deleteUser",
@@ -53,7 +53,7 @@ export default {
       sessionStorage.setItem("loggedIn", "false");
       this.$emit("show-not-logged-in-nav");
       this.$router.push({ name: "Login" });
-    },
-  },
+    }
+  }
 };
 </script>

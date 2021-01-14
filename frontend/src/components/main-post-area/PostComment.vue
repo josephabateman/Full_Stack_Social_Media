@@ -32,11 +32,11 @@ export default {
   name: "PostComment",
   props: {
     msg: String,
-    postId: String,
+    postId: String
   },
   data() {
     return {
-      writeComment: "",
+      writeComment: ""
     };
   },
   methods: {
@@ -48,7 +48,7 @@ export default {
       } else if (this.writeComment !== "") {
         const data = {
           comment: this.writeComment,
-          post_Id: this.postId,
+          post_Id: this.postId
         };
 
         const options = {
@@ -56,9 +56,9 @@ export default {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
 
         const request = await fetch(
@@ -71,13 +71,13 @@ export default {
         }
         this.writeComment = "";
         this.$emit("reload", {
-        btnName: "show-all-posts",
-        alertMessage: "Showing all posts",
-      });
+          btnName: "show-all-posts",
+          alertMessage: "Showing all posts"
+        });
       } else {
         alert("can not be empty");
       }
-    },
-  },
+    }
+  }
 };
 </script>

@@ -51,12 +51,9 @@
             >
           </b-form>
         </b-col>
-        <!-- <b-col>2 of 3</b-col>
-      <b-col>3 of 3</b-col> -->
       </b-row>
     </b-container>
 
-    <!-- <button @click="passCredentials">Emit Event</button> -->
   </div>
 </template>
 
@@ -68,11 +65,11 @@ export default {
       firstName: "",
       lastName: "",
       email: "",
-      password: "",
+      password: ""
     };
   },
   props: {
-    msg: String,
+    msg: String
   },
   methods: {
     signup: async function() {
@@ -83,6 +80,7 @@ export default {
         this.firstName === "" ||
         this.lastName === ""
       ) {
+        <p class="text-danger">Please fill out</p>
         alert("Please complete all fields");
         return;
       }
@@ -92,16 +90,16 @@ export default {
           email: this.email,
           password: this.password,
           firstName: this.firstName,
-          lastName: this.lastName,
+          lastName: this.lastName
         };
 
         const options = {
           method: "POST",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch("http://localhost:5001/signup", options);
         const response = await request.json();
@@ -113,7 +111,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-  },
+    }
+  }
 };
 </script>

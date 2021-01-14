@@ -8,7 +8,7 @@
 export default {
   name: "DeletePost",
   props: {
-    postId: String,
+    postId: String
   },
   methods: {
     deletePost: async function() {
@@ -17,16 +17,16 @@ export default {
         const token = JSON.parse(sessionStorage.getItem("jwt"));
 
         const data = {
-          postId,
+          postId
         };
 
         const options = {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch("http://localhost:5001/posts", options);
         const jsonResponse = await request.json();
@@ -35,11 +35,14 @@ export default {
         } else {
           alert(jsonResponse.message);
         }
-        this.$emit("reload");
+        this.$emit("reload", {
+        btnName: "show-all-posts",
+        alertMessage: "Showing all posts"
+      });
       } else {
         console.log("post shall stay");
       }
-    },
-  },
+    }
+  }
 };
 </script>

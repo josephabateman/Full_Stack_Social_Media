@@ -31,8 +31,7 @@
             >
           </b-form>
         </b-col>
-        <!-- <b-col>2 of 3</b-col>
-      <b-col>3 of 3</b-col> -->
+
       </b-row>
     </b-container>
   </div>
@@ -45,11 +44,11 @@ export default {
     return {
       email: "",
       password: "",
-      userId: "",
+      userId: ""
     };
   },
   props: {
-    msg: String,
+    msg: String
   },
   methods: {
     // i previously passed in email and password as arguments - maybe do that again
@@ -57,15 +56,15 @@ export default {
       try {
         const data = {
           email: this.email,
-          password: this.password,
+          password: this.password
         };
         const options = {
           method: "POST",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch("http://localhost:5001/login", options);
         const response = await request.json();
@@ -77,11 +76,9 @@ export default {
           sessionStorage.setItem("userId", JSON.stringify(response.userId));
           sessionStorage.setItem("loggedIn", "true");
 
-          // change from user id to something else
           const parsedUserId = JSON.parse(sessionStorage.getItem("userId"));
           this.userId = parsedUserId;
 
-          // location.reload()
           this.$emit("show-logged-in-nav");
 
           //redirect to logged in home page
@@ -90,8 +87,8 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-  },
+    }
+  }
 };
 </script>
 

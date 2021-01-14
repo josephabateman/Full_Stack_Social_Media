@@ -14,7 +14,7 @@ import LogInForm from "@/components/not-logged-in/LogInForm.vue";
 export default {
   name: "Login",
   components: {
-    LogInForm,
-  },
+    LogInForm
+  }
 };
 </script>

@@ -15,7 +15,7 @@ export default {
   props: {
     commentId: String,
     postArray: Array,
-    btnClicked: String,
+    btnClicked: String
   },
   data() {
     return {};
@@ -26,7 +26,7 @@ export default {
       if (this.btnClicked !== "get-user-posts") {
         btn.classList = "btn btn-light";
       }
-    },
+    }
   },
   methods: {
     getUserPosts: async function() {
@@ -35,8 +35,8 @@ export default {
       const options = {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
 
       const response = await fetch(`http://localhost:5001/userId`, options);
@@ -47,7 +47,7 @@ export default {
       const btn = document.getElementById("get-user-posts");
       btn.classList = "btn btn-primary";
       this.$emit("get-user-posts", jsonDataUserPosts);
-    },
-  },
+    }
+  }
 };
 </script>

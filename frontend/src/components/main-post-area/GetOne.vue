@@ -78,13 +78,13 @@ export default {
     UserOptions
   },
   props: {
-    msg: String,
+    msg: String
   },
   data() {
     return {
       onePost: [],
       userId: "",
-      postId: "",
+      postId: ""
     };
   },
   mounted() {
@@ -101,8 +101,8 @@ export default {
       const options = {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
       const response = await fetch(
         `http://localhost:5001/${this.postId}`,
@@ -114,7 +114,7 @@ export default {
     },
     reload() {
       this.getOne();
-    },
-  },
+    }
+  }
 };
 </script>

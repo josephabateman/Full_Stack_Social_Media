@@ -29,7 +29,7 @@ export default {
   name: "DeleteComment",
   props: {
     commentId: String,
-    postArray: Array,
+    postArray: Array
   },
   data() {
     return {};
@@ -71,7 +71,7 @@ export default {
           comment: comment,
           postId: postId,
           firstName: firstName,
-          lastName: lastName,
+          lastName: lastName
         };
 
         const options = {
@@ -79,9 +79,9 @@ export default {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch(
           "http://localhost:5001/deleteComment",
@@ -96,7 +96,7 @@ export default {
       } else {
         console.log("comment not deleted");
       }
-    },
-  },
+    }
+  }
 };
 </script>

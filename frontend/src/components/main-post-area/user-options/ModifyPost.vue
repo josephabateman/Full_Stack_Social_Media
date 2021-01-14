@@ -27,13 +27,13 @@ export default {
   name: "ModifyPost",
   props: {
     msg: String,
-    postId: String,
+    postId: String
   },
   data() {
     return {
       caption: "",
       modalId: "",
-      fileId: "",
+      fileId: ""
     };
   },
   mounted() {
@@ -59,9 +59,9 @@ export default {
         const options = {
           method: "PUT",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: fd,
+          body: fd
         };
 
         const response = await fetch("http://localhost:5001/posts", options);
@@ -69,10 +69,13 @@ export default {
         if (jsonResponse.error) {
           alert(jsonResponse.error);
         }
-        await this.$emit("reload");
+        this.$emit("reload", {
+        btnName: "show-all-posts",
+        alertMessage: "Showing all posts"
+      });
         this.caption = "";
       }
-    },
-  },
+    }
+  }
 };
 </script>

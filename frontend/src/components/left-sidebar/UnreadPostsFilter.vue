@@ -72,12 +72,12 @@ export default {
   props: {
     msg: String,
     userId: String,
-    postArray: Array,
+    postArray: Array
   },
   watch: {
     postArray() {
       this.updateUnreadNumber();
-    },
+    }
   },
   data() {
     return {
@@ -85,7 +85,7 @@ export default {
       filteredByUnread: [],
       unreadButtonText: "",
       dismissSecs: 4,
-      dismissCountDown: 0,
+      dismissCountDown: 0
     };
   },
   methods: {
@@ -101,7 +101,7 @@ export default {
         if (!usersReadArray.includes(this.userId)) {
           this.unreadPostsNum += 1;
           this.filteredByUnread = this.postArray.filter(
-            (post) => !post.users_read.includes(this.userId)
+            post => !post.users_read.includes(this.userId)
           );
         }
       }
@@ -121,8 +121,8 @@ export default {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
 
       const request = await fetch(
@@ -135,10 +135,10 @@ export default {
       } else {
         this.$emit("reload", {
           btnName: "show-all-posts",
-          alertMessage: "No posts to read",
+          alertMessage: "No posts to read"
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>

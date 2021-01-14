@@ -6,14 +6,14 @@
           <UpdateUserDetails class="mb-3" />
         </div>
         <div class="col-md-8 d-flex justify-content-start">
-          <b-button
-            @click.prevent="getUserPosts"
-            class="btn btn-light mb-3"
+          <b-button @click.prevent="getUserPosts" class="btn btn-light mb-3"
             >Show My Posts</b-button
           >
         </div>
         <div class="col-md-8 d-flex justify-content-start">
-          <DeleteAccount v-on:show-not-logged-in-nav="$emit('show-not-logged-in-nav')" />
+          <DeleteAccount
+            v-on:show-not-logged-in-nav="$emit('show-not-logged-in-nav')"
+          />
         </div>
       </div>
     </div>
@@ -62,7 +62,6 @@
                     <p class="text-left">{{ comment.comment }}</p>
                   </b-col>
                 </b-row>
-
               </b-container>
             </div>
           </div>
@@ -85,12 +84,12 @@ export default {
     DeleteAccount,
     UpdateUserDetails,
     ModifyPost,
-    DeletePost,
+    DeletePost
   },
   data() {
     return {
       userPosts: [],
-      userId: "",
+      userId: ""
     };
   },
   mounted() {
@@ -106,8 +105,8 @@ export default {
       const options = {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
 
       const response = await fetch(`http://localhost:5001/userId`, options);
@@ -116,7 +115,7 @@ export default {
         alert(jsonDataUserPosts.error);
       }
       this.userPosts = jsonDataUserPosts;
-    },
-  },
+    }
+  }
 };
 </script>

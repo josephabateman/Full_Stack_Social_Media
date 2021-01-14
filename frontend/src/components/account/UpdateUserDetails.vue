@@ -34,13 +34,13 @@
 export default {
   name: "UpdateUserDetails",
   props: {
-    msg: String,
+    msg: String
   },
   data() {
     return {
       firstName: "",
       lastName: "",
-      newPassword: "",
+      newPassword: ""
     };
   },
   methods: {
@@ -58,15 +58,15 @@ export default {
           password: password,
           firstName: this.firstName,
           lastName: this.lastName,
-          newPassword: this.newPassword,
+          newPassword: this.newPassword
         };
         const options = {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(data)
         };
         const request = await fetch(
           "http://localhost:5001/userDetails",
@@ -79,10 +79,10 @@ export default {
           alert(jsonResponse.message);
         }
       }
-      this.firstName = ''
-      this.lastName = ''
-      this.newPassword = ''
-    },
-  },
+      this.firstName = "";
+      this.lastName = "";
+      this.newPassword = "";
+    }
+  }
 };
 </script>

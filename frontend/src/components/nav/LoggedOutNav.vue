@@ -31,7 +31,7 @@ export default {
       if (this.$router.history.current.path !== "/") {
         this.$router.push({ name: "Home" });
       }
-    },
-  },
+    }
+  }
 };
 </script>

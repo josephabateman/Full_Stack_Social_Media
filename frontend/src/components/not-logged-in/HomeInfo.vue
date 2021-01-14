@@ -15,8 +15,8 @@
 export default {
   name: "HomeInfo",
   props: {
-    msg: String,
-  },
+    msg: String
+  }
 };
 </script>
 

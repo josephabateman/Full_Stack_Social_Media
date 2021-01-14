@@ -30,7 +30,7 @@ export default {
       if (this.$router.history.current.path !== "/posts") {
         this.$router.push({ name: "Posts" });
       }
-    },
-  },
+    }
+  }
 };
 </script>

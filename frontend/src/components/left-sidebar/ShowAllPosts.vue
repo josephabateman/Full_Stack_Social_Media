@@ -13,7 +13,7 @@
 export default {
   name: "ShowAllPosts",
   props: {
-    btnClicked: String,
+    btnClicked: String
   },
   data() {
     return {};
@@ -24,7 +24,7 @@ export default {
       if (this.btnClicked !== "show-all-posts") {
         btn.classList = "btn btn-light";
       }
-    },
+    }
   },
   methods: {
     showAllPosts: function() {
@@ -32,9 +32,9 @@ export default {
       btn.classList = "btn btn-success";
       this.$emit("reload", {
         btnName: "show-all-posts",
-        alertMessage: "Showing all posts",
+        alertMessage: "Showing all posts"
       });
-    },
-  },
+    }
+  }
 };
 </script>

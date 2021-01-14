@@ -26,22 +26,25 @@ export default {
   name: "UserOptions",
   components: {
     ModifyPost,
-    DeletePost,
+    DeletePost
   },
   props: {
     msg: String,
-    postId: String,
+    postId: String
   },
   data() {
     return {
-      caption: "",
+      caption: ""
     };
   },
   methods: {
     closeModal() {
-      this.$emit("reload");
+      this.$emit("reload", {
+        btnName: "show-all-posts",
+        alertMessage: "Showing all posts"
+      });
       this.$root.$emit("bv::hide::modal", this.postId);
-    },
-  },
+    }
+  }
 };
 </script>
