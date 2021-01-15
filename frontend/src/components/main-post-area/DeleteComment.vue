@@ -91,7 +91,10 @@ export default {
         if (jsonResponse.error) {
           alert(jsonResponse.error);
         } else {
-          this.$emit("reload");
+          this.$emit("reload", {
+          btnName: "show-all-posts",
+          alertMessage: "Comment deleted"
+          });
         }
       } else {
         console.log("comment not deleted");
